@@ -6,10 +6,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar'
+import { PanelLeftClose } from 'lucide-react'
 
 export function TeamSwitcher() {
 
+    const { toggleSidebar } = useSidebar()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -27,6 +30,7 @@ export function TeamSwitcher() {
                   Hydra
                 </span>
               </div>
+              <div> <button onClick={toggleSidebar}><PanelLeftClose/></button></div>
             </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

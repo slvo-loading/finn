@@ -12,7 +12,10 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
+  SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { PanelLeftOpen } from 'lucide-react'
 
 // This is sample data.
 const data = {
@@ -37,12 +40,22 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  return (
-    <Sidebar collapsible="icon" {...props}>
+const { toggleSidebar, open } = useSidebar()
+return (
+    <Sidebar collapsible="icon"{...props}>
       <SidebarHeader>
         <TeamSwitcher/>
       </SidebarHeader>
       <SidebarContent>
+      {!open && (
+        <button
+        onClick={toggleSidebar}
+        className="flex items-center justify-center w-full"
+        >
+        <PanelLeftOpen className="w-4 h-4" />
+        </button>
+
+        )}
         <NavMain/>
         <NavProjects projects={data.projects} />
       </SidebarContent>
