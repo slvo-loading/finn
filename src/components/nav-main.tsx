@@ -9,38 +9,35 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-const items = [
-    {
-      title: "New Chat",
-      url: "#",
-      icon: MessageCirclePlus,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
-    {
-      title: "Saved",
-      url: "#",
-      icon: Bookmark,
-    },
-  ]
+type NavMainProps = {
+    createChat: () => void; // Function to create a new chat
+    chats: { name: string; messages: string[] }[]; // Array of chat objects
+  };
 
-export function NavMain() {
+export function NavMain({ createChat, chats }: NavMainProps) {
   return (
     <SidebarGroup>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem >
+                <SidebarMenuButton asChild>
+                    <button onClick={createChat}>
+                      <MessageCirclePlus/>
+                      <span>New Chat</span>
+                    </button>
+                  </SidebarMenuButton>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href="#">
+                      <Search/>
+                      <span>Search</span>
+                    </a>
+                  </SidebarMenuButton>
+                  <SidebarMenuButton asChild>
+                    <a href="#">
+                      <Bookmark/>
+                      <span>Saved</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
             </SidebarMenu>
     </SidebarGroup>
   )}

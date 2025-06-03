@@ -13,7 +13,6 @@ import {
   SidebarHeader,
   SidebarRail,
   useSidebar,
-  SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { PanelLeftOpen } from 'lucide-react'
 
@@ -39,31 +38,31 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-const { toggleSidebar, open } = useSidebar()
-return (
-    <Sidebar collapsible="icon"{...props}>
-      <SidebarHeader>
-        <TeamSwitcher/>
-      </SidebarHeader>
-      <SidebarContent>
-      {!open && (
-        <button
-        onClick={toggleSidebar}
-        className="flex items-center justify-center w-full"
-        >
-        <PanelLeftOpen className="w-4 h-4" />
-        </button>
-
-        )}
-        <NavMain/>
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-  )
-}
-
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+    createChat: () => void; // Function to create a new chat
+    chats: { name: string; messages: string[] }[]; // Array of chat objects
+  };
+  
+  export function AppSidebar({ createChat, chats, ...props }: AppSidebarProps) {
+    const { toggleSidebar, open } = useSidebar();
+  
+    return (
+      <Sidebar collapsible="icon" variant="floating" {...props}>
+        <SidebarHeader>
+          <TeamSwitcher />
+        </SidebarHeader>
+        <SidebarContent>
+          {!open && (
+            <button
+              onClick={toggleSidebar}
+              className="flex items-center justify-center w-full"
+            >
+              <PanelLeftOpen className="w-4 h-4" />
+            </button>
+          )}
+          <NavMain createChat={createChat} chats={chats} />
+          <NavProjects chats={chats} />
+        </SidebarContent>
+      </Sidebar>
+    );
+  }

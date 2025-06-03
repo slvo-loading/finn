@@ -23,14 +23,14 @@ export function TeamSwitcher() {
               <img
                 src="hydralogo.png"
                 alt="Team Logo"
-                className="w-full h-auto max-w-[2rem] transition-all object-contain"
+                className="w-full h-auto max-w-[1.5rem] transition-all object-contain"
                 />
               <div className="grid flex-1 text-left text-xl leading-tight">
                 <span className="font-semibold text-[#a6d1eb]">
                   Hydra
                 </span>
               </div>
-              <div> <button onClick={toggleSidebar}><PanelLeftClose/></button></div>
+              <div> <PanelLeftClose onClick={toggleSidebar} className="w-4 h-4"/></div>
             </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

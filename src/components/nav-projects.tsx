@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  Folder,
   Forward,
   MoreHorizontal,
   Trash2,
@@ -25,13 +24,13 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
+
 export function NavProjects({
-  projects,
+  chats,
 }: {
-  projects: {
+  chats: {
     name: string
-    url: string
-    icon: LucideIcon
+    messages: string
   }[]
 }) {
   const { isMobile } = useSidebar()
@@ -40,12 +39,10 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Today</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {chats.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
                 <span>{item.name}</span>
-              </a>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
