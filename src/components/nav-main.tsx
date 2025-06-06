@@ -14,7 +14,7 @@ type NavMainProps = {
     chats: { name: string; messages: string[] }[]; // Array of chat objects
   };
 
-export function NavMain({ createChat, chats }: NavMainProps) {
+export function NavMain({ createChat }: NavMainProps) {
   return (
     <SidebarGroup>
             <SidebarMenu>

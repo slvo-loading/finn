@@ -5,30 +5,60 @@ import { Button } from "@/components/ui/button"
 import { Plus, ArrowUp } from "lucide-react"
 import { ModelSelector } from "@/components/model-selector"
 
+import { useEffect, useRef } from 'react';
+
+
+import { useChat } from '@ai-sdk/react';
 
 export function ChatInput() {
+  const { messages, input, handleInputChange, handleSubmit, error } = useChat(); 
+  const chatContainer = useRef<HTMLDivElement>(null);
 
-    return(
-    <div className="flex-1 flex flex-col bg-gray-300 min-w-0">
-        <div className="bg-gray-500 flex-1 overflow-y-auto">
-        </div>
+  //scroll feature
+  const scroll = () => {
+    const {offsetHeight, scrollHeight, scrollTop } = chatContainer.current as HTMLDivElement;
+    if (scrollHeight >= scrollTop + offsetHeight) {
+      chatContainer.current?.scrollTo(0, scrollHeight + 200)
+    } 
+  }
 
-        <div className="bg-white w-fit max-w-[90%] max-h-[35%] flex flex-col mb-10 mx-auto rounded-3xl p-2 gap-2">
-          <Textarea/>
-          
-          <div className="flex justify-center items-center w-full px-4 py-2">
-              <div className="flex gap-2">
-              <Button variant="ghost" size="sm">
-                <Plus/>
-              </Button>
-              <ModelSelector />
-              </div>
-              <div className="flex ml-auto">
-              <Button size="sm">
-                <ArrowUp/>
-              </Button>
-              </div>
-          </div>
-        </div>
+  useEffect(() => {
+    scroll();
+  }, [messages]);
+
+    const renderResponse = () => {
+    return (
+      <div className="flex flex-col gap-3 p-4">
+        {messages.map(message => (
+          <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] px-4 py-3 rounded-xl whitespace-pre-wrap ${message.role === 'user'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-900'
+              }`}>
+                {message.parts.map((part, index) => {
+                  switch(part.type) {
+                    case 'text':
+                      return <span key={index}>{part.text}</span>
+                  }
+                })}
+                </div>
+            </div>
+        ))}
+      </div> 
+    )
+  }
+
+  return (
+    <div className='flex-1 flex flex-col bg-gray-300 min-w-0'>
+      <div ref={chatContainer} className="flex-1 overflow-y-auto px-4 py-6">
+        {renderResponse()}
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <input placeholder="Ask Anything" name="prompt" value={input} onChange={handleInputChange} />
+        <button type="submit">Submit</button>
+      </form>
+      {error && <div className="text-red-500">{error.message}</div>}
     </div>
-)}
+  );
+}

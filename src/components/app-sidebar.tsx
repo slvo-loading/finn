@@ -60,7 +60,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
               <PanelLeftOpen className="w-4 h-4" />
             </button>
           )}
-          <NavMain createChat={createChat} chats={chats} />
+          <NavMain createChat={createChat} />
           <NavProjects chats={chats} />
         </SidebarContent>
       </Sidebar>
