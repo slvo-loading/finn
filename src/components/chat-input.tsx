@@ -6,12 +6,13 @@ import { Plus, ArrowUp } from "lucide-react"
 import { ModelSelector } from "@/components/model-selector"
 
 import { useEffect, useRef } from 'react';
-
-
 import { useChat } from '@ai-sdk/react';
 
-export function ChatInput() {
-  const { messages, input, handleInputChange, handleSubmit, error } = useChat(); 
+export function ChatInput({ model }: { model: string }) {
+  const { messages, input, handleInputChange, handleSubmit, error } = useChat({
+    api: `/api/chat?model=${encodeURIComponent(model)}`,
+    key: model
+  }); 
   const chatContainer = useRef<HTMLDivElement>(null);
 
   //scroll feature
@@ -31,9 +32,9 @@ export function ChatInput() {
       <div className="flex flex-col gap-3 p-4">
         {messages.map(message => (
           <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] px-4 py-3 rounded-xl whitespace-pre-wrap ${message.role === 'user'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-900'
+              <div className={`max-w-[80%] px-3 py-2 rounded-md whitespace-pre-wrap ${message.role === 'user'
+                ? 'bg-gray-200'
+                : ''
               }`}>
                 {message.parts.map((part, index) => {
                   switch(part.type) {
@@ -49,16 +50,22 @@ export function ChatInput() {
   }
 
   return (
-    <div className='flex-1 flex flex-col bg-gray-300 min-w-0'>
-      <div ref={chatContainer} className="flex-1 overflow-y-auto px-4 py-6">
+    <div className='flex-1 flex flex-col bg-white min-w-0 items-center'>
+      <div ref={chatContainer} className="h-full w-2xl bg-white flex flex-col overflow-y-auto py-6">
         {renderResponse()}
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <input placeholder="Ask Anything" name="prompt" value={input} onChange={handleInputChange} />
-        <button type="submit">Submit</button>
+      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={handleSubmit}>
+        <Textarea name="prompt" placeholder="Ask Anything" onChange={handleInputChange} value={input}/>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button><Plus/></Button>
+            <ModelSelector/>
+          </div>
+          <Button type="submit"><ArrowUp/></Button>
+        </div>
       </form>
-      {error && <div className="text-red-500">{error.message}</div>}
+      <div>{error ? error.message : null}</div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { ChatInput } from "@/components/chat-input"
 import React from "react"
 import { useState } from "react"
+import { useModelSelector } from "@/hooks/useModelSelector"
 
 type Chat = {
   name: string;
@@ -12,6 +13,7 @@ type Chat = {
 };
 
 export default function Home() {
+  const model = useModelSelector((state) => state.model);
   const [chats, setChats] = useState<Chat[]>([]);
 
   const createNewChat = () => {
@@ -31,7 +33,7 @@ export default function Home() {
       <AppSidebar createChat={createNewChat} chats={chats}/>
       
       {/* text area */}
-      <ChatInput />
+      <ChatInput model={model}/>
 
       {/* water popup */}
       <div className="flex-shrink-0 flex flex-col items-center justify-center bg-white h-full w-64">
