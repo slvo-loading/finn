@@ -1,4 +1,5 @@
 import type { UIMessage } from 'ai';
+import ReactMarkdown from 'react-markdown';
 
 export function RenderResponse({ messages }: { messages: UIMessage[] }) {
     return (
@@ -9,10 +10,10 @@ export function RenderResponse({ messages }: { messages: UIMessage[] }) {
                   ? 'bg-gray-200'
                   : ''
                 }`}>
-                  {message.parts.map((part, index) => {
+                  {message.parts.map((part) => {
                     switch(part.type) {
                       case 'text':
-                        return <span key={index}>{part.text}</span>
+                        return <ReactMarkdown>{part.text}</ReactMarkdown>
                     }
                   })}
                   </div>
