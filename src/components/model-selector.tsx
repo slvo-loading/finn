@@ -9,11 +9,7 @@ import {
   } from "@/components/ui/select"
   import { useModelSelector } from "@/hooks/useModelSelector";
 
-  const AVAILABLE_MODELS = [
-    { value: "openai:gpt-4o", label: "ChatGPT 4o" },
-    { value: "anthropic:claude-3-haiku-20240307", label: "Claude Sonnet 3" },
-    { value: "deepseek:deepseek-chat", label: "Deepseek V2" },
-  ] as const;
+  import { AVAILABLE_MODELS } from "@/lib/models";
 
 export function ModelSelector() {
     const model = useModelSelector((state) => state.model);

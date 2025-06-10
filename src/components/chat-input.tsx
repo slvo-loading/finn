@@ -36,8 +36,8 @@ export function ChatInput({ model, onNewMessage }: ChatInputProps) {
 
   useEffect(() => {
     const last = messages.at(-1);
-    if (last) onNewMessage(last); // Send message to parent
-  }, [messages, onNewMessage]);
+    if (last) onNewMessage({...last, model,}); // Send message to parent
+  }, [messages, onNewMessage, model]);
   
   return (
     // <div className='flex-1 flex flex-col bg-white min-w-0 items-center'>
