@@ -1,11 +1,14 @@
+"use client"
+
 import type { UIMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Pencil, ThumbsUp, ThumbsDown, RefreshCcw } from 'lucide-react';
+import { Copy, Pencil, ThumbsUp, ThumbsDown, RefreshCcw, Fish } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { AVAILABLE_MODELS } from "@/lib/models";
 
 
-export function RenderResponse({ messages }: { messages: UIMessage[] }) {
+export function RenderResponse({ messages, isThinking }: { messages: UIMessage[], isThinking:boolean }) {
+
     return (
         <div className="flex flex-col gap-3 p-4">
           {messages.map(message => (
@@ -59,6 +62,12 @@ export function RenderResponse({ messages }: { messages: UIMessage[] }) {
 
             </div>
           ))}
+
+          {isThinking && (
+            <div className="flex items-center gap-2 text-gray-500 animate-pulse">
+              <Fish className="w-5 h-5 animate-pulse" />
+            </div>
+          )}
         </div> 
       )
 }

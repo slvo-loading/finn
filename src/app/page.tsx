@@ -19,6 +19,7 @@ export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
 
   const [allMessages, setAllMessages] = useState<UIMessage[]>([]);
+  const [isThinking, setIsThinking] = useState(false);
 
   const createNewChat = () => {
     console.log("Creating new chat...")
@@ -68,9 +69,9 @@ export default function Home() {
       {/* text area */}
       <div className='flex-1 flex flex-col bg-white min-w-0 items-center'>
       <div ref={chatContainer} className="h-full w-2xl bg-white flex flex-col overflow-y-auto py-6">
-        <RenderResponse messages={allMessages}/>
+        <RenderResponse messages={allMessages} isThinking={isThinking} />
       </div>
-      <ChatInput model={model} onNewMessage={handleNewMessage}/>
+      <ChatInput model={model} onNewMessage={handleNewMessage} setIsThinking={setIsThinking}/>
       </div>
 
       {/* water popup */}
