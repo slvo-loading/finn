@@ -9,6 +9,7 @@ import { RenderResponse } from "@/components/render-response"
 import type { UIMessage } from 'ai';
 import { Button } from "@/components/ui/button"
 import { Fish, ShoppingCart, Palette, Shell, SquarePlay } from "lucide-react"
+import { RefillButton } from "@/components/refill-button"
 
 
 import {
@@ -29,6 +30,11 @@ export default function Home() {
 
   const [allMessages, setAllMessages] = useState<UIMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
+
+  const [waterLevel, setWaterLevel] = useState(100); // % or liters
+  const [coins, setCoins] = useState(0);
+  const [adsNeeded, setAdsNeeded] = useState(20); // for full refill
+
 
   const createNewChat = () => {
     console.log("Creating new chat...")
@@ -84,8 +90,8 @@ export default function Home() {
                 {/* text area */}
             <div className='flex-1 flex flex-col min-w-0 items-center'>
             <div className="flex justify-end w-full px-2 pt-2">
-              <Button variant="ghost" size="sm">123 <Shell/></Button>
-              <Button variant="ghost" size="icon"><SquarePlay/></Button>
+              <Button variant="ghost" size="sm">{coins} <Shell/></Button>
+              <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adsNeeded={adsNeeded} setAdsNeeded={setAdsNeeded}/>
             </div>
             <div ref={chatContainer} className="h-full w-2xl bg-white flex flex-col overflow-y-auto py-6">
               <RenderResponse messages={allMessages} isThinking={isThinking} />
