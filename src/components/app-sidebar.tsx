@@ -47,7 +47,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     const { toggleSidebar, open } = useSidebar();
   
     return (
-      <Sidebar collapsible="icon" variant="floating" {...props}>
+      <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <TeamSwitcher />
         </SidebarHeader>

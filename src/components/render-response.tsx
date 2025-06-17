@@ -66,6 +66,7 @@ export function RenderResponse({ messages, isThinking }: { messages: UIMessage[]
           {isThinking && (
             <div className="flex items-center gap-2 text-gray-500 animate-pulse">
               <Fish className="w-5 h-5 animate-pulse" />
+              {/* <span className="w-5 h-5 animate-pulse">🐟</span> */}
             </div>
           )}
         </div> 
