@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Plus, ArrowUp } from "lucide-react"
 import { ModelSelector } from "@/components/model-selector"
+import { MODEL_COST_PER_TOKEN_USD } from "@/lib/model-cost";
 
 import { useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
@@ -14,14 +15,26 @@ type ChatInputProps = {
   onNewMessage: (message: UIMessage) => void; // Define onNewMessage as a prop
 };
 
-export function ChatInput({ model, onNewMessage, setIsThinking }: ChatInputProps) {
+export function ChatInput({ model, onNewMessage, setIsThinking, waterLevel, setWaterLevel }: ChatInputProps) {
 
   const { messages, input, handleInputChange, handleSubmit,  } = useChat({
     api: `/api/chat?model=${encodeURIComponent(model)}`,
     key: model,
     onResponse: () => {
-      // Streaming has started
       setIsThinking(false);
+    },
+    onFinish: (finalMessage, { usage }) => {
+
+      console.log("usage:", usage);
+      const tokensUsed = usage.totalTokens || 0;
+      console.log("Tokens used:", tokensUsed);
+
+      const costPerToken = MODEL_COST_PER_TOKEN_USD[model]; 
+      const WATER_CONVERSION = 0.001; // $ per liter
+  
+      const costUSD = tokensUsed * costPerToken;
+      const waterUsed = costUSD / WATER_CONVERSION;
+      setWaterLevel(prev => Math.max(prev - waterUsed, 0));
     },
   }); 
 
@@ -44,7 +57,12 @@ export function ChatInput({ model, onNewMessage, setIsThinking }: ChatInputProps
             <Button><Plus/></Button>
             <ModelSelector/>
           </div>
-          <Button type="submit"><ArrowUp/></Button>
+          <Button type="submit" disabled={waterLevel <= 0}><ArrowUp/></Button>
+          {waterLevel <= 0 && (
+            <p className="text-red-500 text-xs mt-1">
+              Tank empty! Watch ads or donate to refill.
+            </p>
+          )}
         </div>
       </form>
   );

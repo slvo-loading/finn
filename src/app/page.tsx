@@ -10,7 +10,7 @@ import type { UIMessage } from 'ai';
 import { Button } from "@/components/ui/button"
 import { Fish, ShoppingCart, Palette, Shell, SquarePlay } from "lucide-react"
 import { RefillButton } from "@/components/refill-button"
-
+import { WaterTank } from "@/components/water-tank"
 
 import {
   ResizableHandle,
@@ -33,7 +33,7 @@ export default function Home() {
 
   const [waterLevel, setWaterLevel] = useState(100); // % or liters
   const [coins, setCoins] = useState(0);
-  const [adsNeeded, setAdsNeeded] = useState(20); // for full refill
+  const [adsNeeded, setAdsNeeded] = useState(0); // for full refill
 
 
   const createNewChat = () => {
@@ -74,6 +74,15 @@ export default function Home() {
       return [...prev, message];
     });
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCoins((c) => c + 1); // +1 coin every 10 sec
+    }, 10000);
+  
+    return () => clearInterval(interval);
+  }, []);
+  
   
 
   return (
@@ -89,14 +98,14 @@ export default function Home() {
         <ResizablePanel className="flex flex-col">
                 {/* text area */}
             <div className='flex-1 flex flex-col min-w-0 items-center'>
-            <div className="flex justify-end w-full px-2 pt-2">
-              <Button variant="ghost" size="sm">{coins} <Shell/></Button>
-              <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adsNeeded={adsNeeded} setAdsNeeded={setAdsNeeded}/>
-            </div>
-            <div ref={chatContainer} className="h-full w-2xl bg-white flex flex-col overflow-y-auto py-6">
-              <RenderResponse messages={allMessages} isThinking={isThinking} />
-            </div>
-            <ChatInput model={model} onNewMessage={handleNewMessage} setIsThinking={setIsThinking}/>
+              <div className="flex justify-end w-full px-2 pt-2">
+                <Button variant="ghost" size="sm">{coins} <Shell/></Button>
+                <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adsNeeded={adsNeeded} setAdsNeeded={setAdsNeeded}/>
+              </div>
+              <div ref={chatContainer} className="h-full w-full max-w-2xl overflow-y-auto px-4 py-6">
+                <RenderResponse messages={allMessages} isThinking={isThinking} />
+              </div>
+              <ChatInput model={model} onNewMessage={handleNewMessage} setIsThinking={setIsThinking} waterLevel={waterLevel} setWaterLevel={setWaterLevel}/>
             </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
@@ -109,11 +118,7 @@ export default function Home() {
                 <Button variant="ghost" size="icon"><ShoppingCart /></Button>
               </div>
             </div>
-            <div className="flex items-end h-full w-full rounded-sm border-1 p-1">
-              <div className="h-2/3 w-full bg-sky-200 rounded-sm">
-              {/* put fish in here */}
-              </div>
-            </div>
+            <WaterTank waterLevel={waterLevel}/>
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

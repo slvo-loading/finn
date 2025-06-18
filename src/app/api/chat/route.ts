@@ -42,13 +42,18 @@ export async function POST(req: Request) {
     messages,
     maxTokens: 100,
     temperature: 0.7,
+    onFinish: (res) => {
+      console.log(res.usage)
+    }
     // headers: {
     //   'Cache-Control': 'no-cache',
     //   'x-request-id': crypto.randomUUID(),
     // },
   })
 
-  return result.toDataStreamResponse();
+  return result.toDataStreamResponse({
+    sendUsage: true,
+  });
 } catch (error) {
   console.error('API Error:', error);
   console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
