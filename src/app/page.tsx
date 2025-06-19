@@ -31,9 +31,10 @@ export default function Home() {
   const [allMessages, setAllMessages] = useState<UIMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
 
-  const [waterLevel, setWaterLevel] = useState(100); // % or liters
+  const [waterLevel, setWaterLevel] = useState(0.10); // % or liters
+  const fullTank = 0.10;
   const [coins, setCoins] = useState(0);
-  const [adsNeeded, setAdsNeeded] = useState(0); // for full refill
+  const adRefillAmount = 0.01
 
 
   const createNewChat = () => {
@@ -100,7 +101,7 @@ export default function Home() {
             <div className='flex-1 flex flex-col min-w-0 items-center'>
               <div className="flex justify-end w-full px-2 pt-2">
                 <Button variant="ghost" size="sm">{coins} <Shell/></Button>
-                <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adsNeeded={adsNeeded} setAdsNeeded={setAdsNeeded}/>
+                <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adRefillAmount={adRefillAmount} fullTank={fullTank}/>
               </div>
               <div ref={chatContainer} className="h-full w-full max-w-2xl overflow-y-auto px-4 py-6">
                 <RenderResponse messages={allMessages} isThinking={isThinking} />
@@ -118,7 +119,7 @@ export default function Home() {
                 <Button variant="ghost" size="icon"><ShoppingCart /></Button>
               </div>
             </div>
-            <WaterTank waterLevel={waterLevel}/>
+            <WaterTank waterLevel={waterLevel} fullTank={fullTank}/>
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

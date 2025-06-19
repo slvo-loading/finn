@@ -9,33 +9,34 @@ type RefillProps = {
   setWaterLevel: (n: number) => void;
   coins: number;
   setCoins: (n: number) => void;
-  adsNeeded: number;
-  setAdsNeeded: (n: number) => void;
+  adRefillAmount: number;
+  fullTank: number;
 }
 
 export function RefillButton({
   waterLevel,
   setWaterLevel,
   coins,
-  setCoins,
-  adsNeeded,
-  setAdsNeeded
+  setCoins, 
+  adRefillAmount, 
+  fullTank,
 }: RefillProps) {
   const [loading, setLoading] = useState(false);
 
-  const handleWatchAd = async () => {
+    const adsNeeded = Math.ceil((fullTank - waterLevel) / adRefillAmount);
+
+    const handleWatchAd = async () => {
     setLoading(true);
 
-    // ✅ simulate watching ad + payout
-    await new Promise((r) => setTimeout(r, 2000)); // fake ad duration
+    // simulate watching ad
+    await new Promise((r) => setTimeout(r, 2000));
 
-    // ✅ reward user
-    const newWater = Math.min(waterLevel + 20, 100); // +20% tank
-    const newCoins = coins + 5; // +5 coins for full ad
+    // reward: add water & coins
+    const newWater = Math.min(waterLevel + adRefillAmount, fullTank);
+    const newCoins = coins + 5;
 
     setWaterLevel(newWater);
     setCoins(newCoins);
-    setAdsNeeded(Math.max(adsNeeded - 1, 0));
 
     setLoading(false);
   }

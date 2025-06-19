@@ -12,7 +12,10 @@ import type { UIMessage } from 'ai';
 
 type ChatInputProps = {
   model: string;
-  onNewMessage: (message: UIMessage) => void; // Define onNewMessage as a prop
+  onNewMessage: (message: UIMessage) => void; 
+  setIsThinking: (value: boolean) => void;
+  waterLevel: number; 
+  setWaterLevel: (value: number) => void;
 };
 
 export function ChatInput({ model, onNewMessage, setIsThinking, waterLevel, setWaterLevel }: ChatInputProps) {
@@ -30,11 +33,9 @@ export function ChatInput({ model, onNewMessage, setIsThinking, waterLevel, setW
       console.log("Tokens used:", tokensUsed);
 
       const costPerToken = MODEL_COST_PER_TOKEN_USD[model]; 
-      const WATER_CONVERSION = 0.001; // $ per liter
   
       const costUSD = tokensUsed * costPerToken;
-      const waterUsed = costUSD / WATER_CONVERSION;
-      setWaterLevel(prev => Math.max(prev - waterUsed, 0));
+      setWaterLevel(prev => Math.max(prev - costUSD, 0));
     },
   }); 
 
