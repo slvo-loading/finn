@@ -98,15 +98,17 @@ export default function Home() {
       <ResizablePanelGroup direction="horizontal" autoSaveId="resizable-panel-group">
         <ResizablePanel className="flex flex-col">
                 {/* text area */}
-            <div className='flex-1 flex flex-col min-w-0 items-center'>
-              <div className="flex justify-end w-full px-2 pt-2">
+            <div className='flex-1 flex flex-col min-w-0 items-center min-h-0'>
+              <div className="flex justify-end w-full px-2 pt-2 flex-shrink-0">
                 <Button variant="ghost" size="sm">{coins} <Shell/></Button>
                 <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adRefillAmount={adRefillAmount} fullTank={fullTank}/>
               </div>
-              <div ref={chatContainer} className="h-full w-full max-w-2xl overflow-y-auto px-4 py-6">
+              <div ref={chatContainer} className="flex-1 w-full max-w-2xl overflow-y-auto px-4 py-6 min-h-0 hide-scrollbar">
                 <RenderResponse messages={allMessages} isThinking={isThinking} />
               </div>
+              <div className="flex-shrink-0">
               <ChatInput model={model} onNewMessage={handleNewMessage} setIsThinking={setIsThinking} waterLevel={waterLevel} setWaterLevel={setWaterLevel}/>
+              </div>
             </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
