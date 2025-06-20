@@ -75,15 +75,6 @@ export default function Home() {
       return [...prev, message];
     });
   }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCoins((c) => c + 1); // +1 coin every 10 sec
-    }, 10000);
-  
-    return () => clearInterval(interval);
-  }, []);
-  
   
 
   return (
