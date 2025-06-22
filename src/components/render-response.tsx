@@ -2,7 +2,8 @@
 
 import type { UIMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Pencil, ThumbsUp, ThumbsDown, RefreshCcw, Fish, Bookmark } from 'lucide-react';
+import { Copy, Pencil, RefreshCcw, Fish, Star } from 'lucide-react';
+import { ThumbsUp ,ThumbsDown } from "phosphor-react";
 import { Button } from "@/components/ui/button"
 import { AVAILABLE_MODELS } from "@/lib/models";
 import {
@@ -59,7 +60,7 @@ export function RenderResponse({ messages, isThinking }: { messages: UIMessage[]
                     <HoverCard>
                       <HoverCardTrigger asChild>
                         <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
-                          <Bookmark className="text-gray-400 fade-in w-1 h-1"/>
+                          <Star className="text-gray-400 fade-in w-1 h-1"/>
                         </Button>
                       </HoverCardTrigger>
                       <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
@@ -84,19 +85,17 @@ export function RenderResponse({ messages, isThinking }: { messages: UIMessage[]
                   <div className="flex gap-2 mt-2">
                     <HoverCard>
                       <HoverCardTrigger asChild>
-                        <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
-                          <CopyButton text={wholeMessage}/>
-                        </Button>
+                        <CopyButton text={wholeMessage}/>
                       </HoverCardTrigger>
                       <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
                         <p className="text-[8px] font-medium">Copy</p>
                       </HoverCardContent>
                     </HoverCard>
 
-                    <HoverCard>
+                    {/* <HoverCard>
                       <HoverCardTrigger asChild>
                         <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
-                          <ThumbsUp className="text-gray-400 fade-in w-1 h-1"/>
+                          <ThumbsUp weight="bold" className="text-gray-400 fade-in w-1 h-1"/>
                         </Button>
                       </HoverCardTrigger>
                       <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
@@ -107,11 +106,22 @@ export function RenderResponse({ messages, isThinking }: { messages: UIMessage[]
                     <HoverCard>
                       <HoverCardTrigger asChild>
                         <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
-                          <ThumbsDown className="text-gray-400 fade-in w-1 h-1"/>
+                          <ThumbsDown weight="bold" className="text-gray-400 fade-in w-1 h-1"/>
                         </Button>
                       </HoverCardTrigger>
                       <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
                           <p className="text-[8px] font-medium">Bad Response</p>
+                      </HoverCardContent>
+                    </HoverCard> */}
+
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
+                          <Star className="text-gray-400 fade-in w-1 h-1"/>
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
+                          <p className="text-[8px] font-medium">Save</p>
                       </HoverCardContent>
                     </HoverCard>
 

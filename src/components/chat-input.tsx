@@ -6,6 +6,18 @@ import { Plus, ArrowUp } from "lucide-react"
 import { ModelSelector } from "@/components/model-selector"
 import { MODEL_COST_PER_TOKEN_USD } from "@/lib/model-cost";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 import { useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
 import type { UIMessage } from 'ai';
@@ -52,18 +64,38 @@ export function ChatInput({ model, onNewMessage, setIsThinking, waterLevel, setW
   
   return (
       <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={wrappedHandleSubmit}>
-        <Textarea name="prompt" placeholder="Ask Anything" onChange={handleInputChange} value={input}/>
+        <Textarea name="prompt" placeholder="Ask anything" onChange={handleInputChange} value={input}/>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button><Plus/></Button>
+            {/* <Button><Plus/></Button> */}
             <ModelSelector/>
           </div>
-          <Button type="submit" disabled={waterLevel <= 0}><ArrowUp/></Button>
-          {waterLevel <= 0 && (
-            <p className="text-red-500 text-xs mt-1">
-              Tank empty! Watch ads or donate to refill.
-            </p>
+          
+          {waterLevel > 0 ? (
+            <Button type="submit">
+              <ArrowUp />
+            </Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button type="button">
+                  <ArrowUp />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Your tank is empty!</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Watch ads or donate to refill your tank and continue chatting.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
+
         </div>
       </form>
   );

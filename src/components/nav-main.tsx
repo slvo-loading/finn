@@ -1,6 +1,6 @@
 "use client"
 
-import { MessageCirclePlus, Search, Bookmark} from "lucide-react"
+import { MessageCirclePlus, Search, Star} from "lucide-react"
 
 import {
   SidebarGroup,
@@ -33,7 +33,7 @@ export function NavMain({ createChat }: NavMainProps) {
                   </SidebarMenuButton>
                   <SidebarMenuButton asChild>
                     <a href="#">
-                      <Bookmark/>
+                      <Star/>
                       <span>Saved</span>
                     </a>
                   </SidebarMenuButton>
