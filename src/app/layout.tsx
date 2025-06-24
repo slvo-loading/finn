@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarProvider } from "@/components/ui/sidebar"
+import {AuthProvider} from "@/components/auth-provider"
 import "./globals.css";
 
 import { cookies } from "next/headers"
@@ -31,15 +32,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <SidebarProvider defaultOpen={defaultOpen}>
-
-      <main>
-        {children}
-      </main>
-    </SidebarProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>
+          <SidebarProvider defaultOpen={defaultOpen}>
+            <main>
+              {children}
+            </main>
+          </SidebarProvider>
+        </AuthProvider>
       </body>
     </html>
   );

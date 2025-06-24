@@ -83,8 +83,8 @@ export default function Home() {
               <div className='flex-1 flex flex-col min-w-0 items-center min-h-0'>
                 <div className="flex justify-between w-full px-2 pt-2 flex-shrink-0">
                   <div className="flex gap-2">
-                      <Button size="2xs" variant="outline" className="px-2">Log In</Button>
-                      <Button size="2xs" className="px-2">Sign up for free</Button>
+                      <Button size="2xs" variant="outline" className="px-2" onClick={() => router.push('/auth')}>Log In</Button>
+                      <Button size="2xs" className="px-2" onClick={() => router.push('/fish-lottery')}>Sign up for free</Button>
                   </div>
                   
                   <div className="flex gap-2">
