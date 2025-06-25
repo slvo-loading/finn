@@ -19,15 +19,16 @@ export function Tutorial({setShowTutorial}: {setShowTutorial: (show: boolean) =>
   }, [emblaApi]);
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       {/* Carousel viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
         {/* Carousel container */}
         <div className="flex">
-            {/* slides; the alignmnet is a little off for the first and last :/*/}
-            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-75 p-2">
+            {/* slides;*/}
+            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-100 p-2">
                 <div className="flex flex-col gap-4 items-center justify-center w-full h-full bg-white rounded-lg shadow-md">
-                <Button onClick={() => emblaApi?.scrollTo(totalSlides - 1)} variant="ghost" className="absolute top-5 right-5"><span className="text-gray-500">Skip Tutorial</span></Button>
+                  {/* skip button */}
+                {/* <Button onClick={() => emblaApi?.scrollTo(totalSlides - 1)} variant="ghost" className="absolute top-5 right-5"><span className="text-gray-500">Skip Tutorial</span></Button> */}
                     <img
                     src="hydralogo.png"
                     alt="Team Logo"
@@ -40,7 +41,7 @@ export function Tutorial({setShowTutorial}: {setShowTutorial: (show: boolean) =>
                 </div>
             </div>
 
-            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-75 p-2">
+            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-100 p-2">
                 <div className="gap-4 flex flex-col items-center justify-center w-full h-full bg-white rounded-lg shadow-md">
                     <span className="text-2xl font-semibold">How It Works</span>
                     <span className="text-sm text-gray-500">Every AI chat uses real water.</span>
@@ -55,27 +56,27 @@ export function Tutorial({setShowTutorial}: {setShowTutorial: (show: boolean) =>
                 </div>
             </div>
 
-            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-75 p-2">
+            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-100 p-2">
                 <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg shadow-md p-5">
                   <span className="text-2xl font-semibold">Your Water Tank</span>
                   <span className="text-sm text-gray-500 text-center">Each model uses water at a different rate. <br/>Powerful models sip more, lighter ones sip less!<br/><br/> When your tank runs low, just refill it by watching ads or donating.</span>
                 </div>
             </div>
 
-            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-75 p-2">
+            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-100 p-2">
                 <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg shadow-md p-5">
                   <span className="text-2xl font-semibold">Collect Fish</span>
                   <span className="text-sm text-gray-500 text-center">Earn coins by watching ads all the way through. <br/> <br/> Use coins to fish for cute aquatic buddies and buy decorations for your tank.</span>
                 </div>
             </div>
 
-            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-75 p-2">
+            <div className="flex-[0_0_100%] flex items-center justify-center text-4xl h-100 p-2">
                 <div className="flex flex-col gap-2 items-center justify-center w-full h-full bg-white rounded-lg shadow-md p-5">
                   <span className="text-2xl font-semibold">Let's get started!</span>
-                  <span className="text-sm text-gray-500 text-center">Log in to save your fish & progress.</span>
-                  <Button>Log In</Button>
-                  <Button>Sign up</Button>
-                  <Button onClick={() => setShowTutorial(false)}>Stay Logged Out</Button>
+                  <div className="flex gap-2">
+                  <Button onClick={() => setShowTutorial(false)}>Yes</Button>
+                  <Button onClick={() => setShowTutorial(false)}>Yes!</Button>
+                  </div>
                 </div>
             </div>
         </div>

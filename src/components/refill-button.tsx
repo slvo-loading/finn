@@ -54,8 +54,7 @@ export function RefillButton({
           <Button 
             onClick={handleWatchAd} 
             variant="outline" 
-            size="icon" 
-            className=" w-7 h-7"
+            size="sm"
           >
             <Droplets className=" w-1 h-1"/>
           </Button>

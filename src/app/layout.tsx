@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarProvider } from "@/components/ui/sidebar"
-import {AuthProvider} from "@/components/auth-provider"
+import {AuthProvider} from "@/components/auth/auth-provider"
 import "./globals.css";
 
 import { cookies } from "next/headers"

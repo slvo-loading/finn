@@ -12,7 +12,7 @@ export function CoinDisplay({coins}: { coins: number }) {
     return (
         <HoverCard>
         <HoverCardTrigger asChild>
-          <Button variant="outline" size="2xs" className="px-2">
+          <Button variant="outline" size="sm">
           {coins}
             <TbFishHook className="w-1 h-1"/>
           </Button>

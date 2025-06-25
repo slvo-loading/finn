@@ -63,6 +63,9 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
           <NavMain createChat={createChat} />
           <NavProjects chats={chats} />
         </SidebarContent>
+        <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
       </Sidebar>
     );
   }
