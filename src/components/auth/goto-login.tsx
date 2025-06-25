@@ -7,7 +7,7 @@ export function GoToLogin() {
     const router = useRouter();
 
     return(
-        <Button variant="outline" className="w-full" onClick={() => router.push('/auth')}><span>Log In</span></Button>
+        <Button variant="outline" className="w-full" onClick={() => router.push('/login')}><span>Log In</span></Button>
     )
 
 }
