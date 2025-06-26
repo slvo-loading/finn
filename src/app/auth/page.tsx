@@ -51,6 +51,19 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:3000/main",
+      },
+    });
+
+    if (error) {
+      console.error("Google login error:", error.message);
+    }
+  };
+
     const handleSendCode = async () => {
       if (!email) {
         setEmailError(true);
@@ -176,7 +189,7 @@ export default function LoginPage() {
           <hr className="flex-grow border-t border-gray-300" />
         </div>
 
-        <Button variant="outline" className="w-full h-11">
+        <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-11">
           <FcGoogle/>Sign in with Google
         </Button>
 
