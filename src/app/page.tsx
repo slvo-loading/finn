@@ -150,10 +150,10 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => router.push('/login')}><span>Log In</span></Button>
-                      <Button size="sm" onClick={() => router.push('/signup')}><span>Sign Up</span></Button>
+                      <Button variant="outline" size="sm" onClick={() => router.push('/auth')}><span>Log In</span></Button>
+                      <Button size="sm" onClick={() => router.push('/auth')}><span>Sign Up</span></Button>
                       <span>|</span>
-                      <Button variant="secondary" size="sm" onClick={handleCloseTutorial}>
+                      <Button variant="link" size="sm" onClick={handleCloseTutorial}>
                         <span>Stay Logged Out</span>
                       </Button>
                     </div>
@@ -167,16 +167,19 @@ export default function Home() {
               <div className='flex-1 flex flex-col min-w-0 items-center min-h-0'>
                 <div className="flex justify-between w-full px-2 pt-2 flex-shrink-0">
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => router.push('/login')}><span>Log In</span></Button>
-                    <Button size="sm" onClick={() => router.push('/signup')}><span>Sign Up</span></Button>
+                    <Button variant="outline" size="sm" onClick={() => router.push('/auth')}><span>Log In</span></Button>
+                    <Button size="sm" onClick={() => router.push('/auth')}><span>Sign Up</span></Button>
                     <ResetTutorial onReset={() => setShowTutorial(true)}/>
                   </div>
 
-                  <img
-                  src="hydralogo.png"
-                  alt="Team Logo"
-                  className="w-full h-auto max-w-[1.5rem] transition-all object-contain"
-                  />
+                  <div className="flex items-center justify center gap-2">
+                    <img
+                      src="hydralogo.png"
+                      alt="Team Logo"
+                      className="w-full h-auto max-w-[1.5rem] transition-all object-contain"
+                    />
+                    <span className="font-bold text-[#a6d1eb] text-2xl">Hydra</span>
+                  </div>
                   
                   <div className="flex gap-2">
                       <CoinDisplay coins={coins}/>
@@ -200,12 +203,11 @@ export default function Home() {
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm"><Fish/></Button>
                 </DialogTrigger>
-                <DialogContent className="w-sm h-80 py-12 [&>button]:hidden">
+                <DialogContent className="w-sm h-80 py-12 px-12 [&>button]:hidden">
                   <DialogHeader>
                     <DialogTitle className="text-center">Want to access Guppy Gacha?</DialogTitle>
                     <DialogDescription className="text-center">
-                      Sign in to unlock smarter, eco-friendly chats and start decorating
-                      your tank with unique fish and custom upgrades.
+                      Sign in to unlock smarter, eco-friendly chats and unlock rare aquarium buddies.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex flex-col items-center justify-center gap-3">
@@ -225,12 +227,11 @@ export default function Home() {
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm"> <Sparkles className="w-1 h-1"/></Button>
                 </DialogTrigger>
-                <DialogContent className="w-sm h-80 py-12 [&>button]:hidden">
+                <DialogContent className="w-sm h-80 py-12 px-12 [&>button]:hidden">
                   <DialogHeader>
-                    <DialogTitle className="text-center">Want to customize your aquarium?</DialogTitle>
+                    <DialogTitle className="text-center">Want to customize your tank?</DialogTitle>
                     <DialogDescription className="text-center">
-                      Sign in to unlock smarter, eco-friendly chats and start decorating
-                      your tank with unique fish and custom upgrades.
+                      Sign in to unlock smarter, eco-friendly chats and start decorating your aquarium.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex flex-col items-center justify-center gap-3">
@@ -251,12 +252,11 @@ export default function Home() {
                       <ShoppingBasket className="w-1 h-1"/>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="w-sm h-80 py-12 [&>button]:hidden">
+                <DialogContent className="w-sm h-80 py-12 px-12 [&>button]:hidden">
                   <DialogHeader>
                     <DialogTitle className="text-center">Want to browse the fish store?</DialogTitle>
                     <DialogDescription className="text-center">
-                      Sign in to unlock smarter, eco-friendly chats and start decorating
-                      your tank with unique fish and custom upgrades.
+                      Sign in to unlock smarter, eco-friendly chats and start shopping for aquarium upgrades.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex flex-col items-center justify-center gap-3">

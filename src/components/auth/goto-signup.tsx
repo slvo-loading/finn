@@ -7,7 +7,7 @@ export function GoToSignUp() {
     const router = useRouter();
 
     return(
-        <Button size="sm" className="w-full" onClick={() => router.push('/signup')}><span>Sign Up</span></Button>
+        <Button size="sm" className="w-full" onClick={() => router.push('/auth')}><span>Sign Up</span></Button>
     )
 
 }

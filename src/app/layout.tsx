@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarProvider } from "@/components/ui/sidebar"
 import {AuthProvider} from "@/components/auth/auth-provider"
+import { Toaster } from 'sonner';
 import "./globals.css";
 
 import { cookies } from "next/headers"
@@ -37,6 +38,7 @@ export default async function RootLayout({
           <SidebarProvider defaultOpen={defaultOpen}>
             <main>
               {children}
+              <Toaster position="top-center"/>
             </main>
           </SidebarProvider>
         </AuthProvider>
