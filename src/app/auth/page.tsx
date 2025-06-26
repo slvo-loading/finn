@@ -95,9 +95,56 @@ export default function LoginPage() {
         return () => clearTimeout(timer);
       }
     }, [countdown]);
+
+    // useEffect(() => {
+    //   const canvas = document.getElementById("cursorCanvas");
+    //   const ctx = canvas.getContext("2d");
+    
+    //   let particles = [];
+    
+    //   const resize = () => {
+    //     canvas.width = window.innerWidth;
+    //     canvas.height = window.innerHeight;
+    //   };
+    
+    //   const spawn = (x, y) => {
+    //     particles.push({ x, y, r: 5, alpha: 1 });
+    //   };
+    
+    //   const draw = () => {
+    //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //     particles.forEach((p, i) => {
+    //       p.r += 0.5;
+    //       p.alpha -= 0.02;
+    //       ctx.beginPath();
+    //       ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+    //       ctx.strokeStyle = `rgba(166, 209, 235, ${p.alpha})`;
+    //       ctx.stroke();
+    //     });
+    //     particles = particles.filter(p => p.alpha > 0);
+    //     requestAnimationFrame(draw);
+    //   };
+    
+    //   window.addEventListener("resize", resize);
+    //   window.addEventListener("mousemove", (e) => spawn(e.clientX, e.clientY));
+    //   resize();
+    //   draw();
+    
+    //   return () => {
+    //     window.removeEventListener("resize", resize);
+    //     window.removeEventListener("mousemove", spawn);
+    //   };
+    // }, []);
+    
     
   return (
     <div className="w-screen h-screen flex items-center justify-center">
+
+      {/* fun bubbles? */}
+      {/* <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-50">
+        <canvas id="cursorCanvas" className="w-full h-full" />
+      </div> */}
+
 
       {/* logo */}
       <div className="absolute top-5 left-5">
@@ -113,7 +160,7 @@ export default function LoginPage() {
 
       <div className="flex flex-col gap-2 items-center justify-center w-full max-w-md rounded-xl shadow-lg p-8 space-y-6 border border-gray-200">
         {/* title message */}
-        <span className="text-2xl font-semibold">Ready to dive in? 🌊</span>
+        <span className="text-2xl font-semibold">Ready to dive in?</span>
 
         {/* inputs */}
         <div className="w-full flex flex-col gap-1 items-center justify-center">
