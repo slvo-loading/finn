@@ -49,22 +49,10 @@ export default function Home() {
   const router = useRouter();
 
 
-
-  // const createNewChat = () => {
-  //   console.log("Creating new chat...")
-  //   const newChat = {
-  //     name: `Chat ${chats.length + 1}`,
-  //     messages: [],
-  //     index: chats.length + 1,
-  //   }
-  //   console.log("New chat created:", newChat)
-  //   setChats((prev) => [...prev, newChat])
-  // }
-
+  // creates a new chat in supabase
   const createNewChat = async () => {
-
     const { data: sessionData } = await supabase.auth.getSession();
-console.log("Session access token:", sessionData?.session?.access_token);
+    console.log("Session access token:", sessionData?.session?.access_token);
 
   
     // 🔑 Use getUser instead of getSession for clarity
@@ -91,7 +79,7 @@ console.log("Session access token:", sessionData?.session?.access_token);
         {
           id: uuidv4(),
           user_id: user_id,
-          title: "",
+          title: "Untitled Chat",
           messages: [],
         },
       ])
@@ -106,11 +94,73 @@ console.log("Session access token:", sessionData?.session?.access_token);
     console.log("New chat created:", data);
     return data;
   };
+
+  // fetches all chats from supabase
+  useEffect(() => {
+    fetchChats();
+  }, []);
   
+  const fetchChats = async () => {
+    const { data, error } = await supabase
+      .from("chats")
+      .select("*")
+      .order("updated_at", { ascending: false });
+  
+    if (error) {
+      console.error("Error fetching chats:", error);
+    } else {
+      setChats(data);
+    }
+  };
+  
+  //creates and fetches chats
+  const handleNewChat = async () => {
+    const newChat = await createNewChat();
+    if (newChat) {
+      console.log("New chat created:", newChat);
+      setChats((prev) => [newChat, ...prev]);
+      fetchChats(); 
+      console.log("Chats after creation:", chats);
+    }
+  };
 
-  const chatContainer = useRef<HTMLDivElement>(null);
+  //deletes a chat
+  const deleteChat = async (chatId) => {
+    const { error } = await supabase
+      .from("chats")
+      .delete()
+      .eq("id", chatId);
+  
+    if (error) {
+      console.error("Error deleting chat:", error);
+    } else {
+      // Remove from local state for instant UI update
+      setChats((prev) => prev.filter((chat) => chat.id !== chatId));
+    }
+  };
 
+  // renames a chat
+  // const renameChat = async (chatId, newTitle) => {
+  //   const { error } = await supabase
+  //     .from("chats")
+  //     .update({ title: newTitle, updated_at: new Date().toISOString() })
+  //     .eq("id", chatId);
+  
+  //   if (error) {
+  //     console.error("Error renaming chat:", error);
+  //   } else {
+  //     // Update local state for immediate UI refresh
+  //     setChats((prev) =>
+  //       prev.map((chat) =>
+  //         chat.id === chatId ? { ...chat, title: newTitle } : chat
+  //       )
+  //     );
+  //   }
+  // };
+  
+  
   //scroll feature
+  const chatContainer = useRef<HTMLDivElement>(null);
   const scroll = () => {
     const {offsetHeight, scrollHeight, scrollTop } = chatContainer.current as HTMLDivElement;
     if (scrollHeight >= scrollTop + offsetHeight) {
@@ -121,6 +171,8 @@ console.log("Session access token:", sessionData?.session?.access_token);
   useEffect(() => {
     scroll();
   }, [allMessages]);
+
+  
 
   const handleNewMessage = useCallback((message: UIMessage) => {
     setAllMessages((prev) => {
@@ -140,7 +192,7 @@ console.log("Session access token:", sessionData?.session?.access_token);
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* left sidebar */}
-      <AppSidebar createChat={createNewChat} chats={chats}/>
+      <AppSidebar createChat={handleNewChat} chats={chats} deleteChat={deleteChat}/>
 
       {/* water popup */}
       {/* <div className="flex-shrink-0 flex items-center justify-center bg-white h-full w-64">
