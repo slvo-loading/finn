@@ -25,6 +25,9 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 
+import { supabase } from "@/lib/supabase";
+import { v4 as uuidv4 } from 'uuid';
+
 type Chat = {
   name: string;
   messages: string[]; // Adjust the type of messages if needed
@@ -46,16 +49,64 @@ export default function Home() {
   const router = useRouter();
 
 
-  const createNewChat = () => {
-    console.log("Creating new chat...")
-    const newChat = {
-      name: `Chat ${chats.length + 1}`,
-      messages: [],
-      index: chats.length + 1,
+
+  // const createNewChat = () => {
+  //   console.log("Creating new chat...")
+  //   const newChat = {
+  //     name: `Chat ${chats.length + 1}`,
+  //     messages: [],
+  //     index: chats.length + 1,
+  //   }
+  //   console.log("New chat created:", newChat)
+  //   setChats((prev) => [...prev, newChat])
+  // }
+
+  const createNewChat = async () => {
+
+    const { data: sessionData } = await supabase.auth.getSession();
+console.log("Session access token:", sessionData?.session?.access_token);
+
+  
+    // 🔑 Use getUser instead of getSession for clarity
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+  
+    console.log("User data:", userData);
+    if (userError) {
+      console.error("User error:", userError);
+      return null;
     }
-    console.log("New chat created:", newChat)
-    setChats((prev) => [...prev, newChat])
-  }
+
+    console.log("Creating new chat...");
+  
+    const user_id = userData?.user?.id;
+    if (!user_id) {
+      console.error("No user found.");
+      return null;
+    }
+    console.log("User ID:", user_id);
+  
+    const { data, error } = await supabase
+      .from("chats")
+      .insert([
+        {
+          id: uuidv4(),
+          user_id: user_id,
+          title: "",
+          messages: [],
+        },
+      ])
+      .select()
+      .single();
+  
+    if (error) {
+      console.error("Error creating new chat:", error);
+      return null;
+    }
+  
+    console.log("New chat created:", data);
+    return data;
+  };
+  
 
   const chatContainer = useRef<HTMLDivElement>(null);
 

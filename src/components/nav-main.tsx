@@ -1,6 +1,7 @@
 "use client"
 
 import { MessageCirclePlus, Search, Star} from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 import {
   SidebarGroup,
@@ -8,6 +9,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 type NavMainProps = {
     createChat: () => void; // Function to create a new chat
@@ -19,23 +31,26 @@ export function NavMain({ createChat }: NavMainProps) {
     <SidebarGroup>
             <SidebarMenu>
                 <SidebarMenuItem >
+                
                 <SidebarMenuButton asChild>
-                    <button onClick={createChat}>
-                      <MessageCirclePlus/>
-                      <span>New Chat</span>
-                    </button>
-                  </SidebarMenuButton>
+                  <Button variant="ghost" size="sm" className="w-full justify-start" onClick={createChat}>
+                    <MessageCirclePlus/>
+                    <span>New Chat</span>
+                  </Button>
+                </SidebarMenuButton>
+
                   <SidebarMenuButton asChild>
-                    <a href="#">
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
                       <Search/>
                       <span>Search</span>
-                    </a>
+                    </Button>
                   </SidebarMenuButton>
+
                   <SidebarMenuButton asChild>
-                    <a href="#">
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
                       <Star/>
                       <span>Saved</span>
-                    </a>
+                      </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
