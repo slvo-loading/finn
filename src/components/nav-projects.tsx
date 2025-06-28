@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase";
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
 import {
   Forward,
@@ -50,16 +52,19 @@ type Chat = {
 };
 
 export function NavProjects({
-  chats, deleteChat
+  chats, deleteChat, renameChat
 }: {
   chats: Chat[],
-  deleteChat: (chatId: string) => void
+  deleteChat: (chatId: string) => void,
+  renameChat: (chatId: string, newTitle: string) => void
 }) {
 
   const { isMobile } = useSidebar()
   const [renameOpen, setRenameOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [title, setTitle] = useState("")
+  const [selectedId, setSelectedId] = useState("")
 
 
   return (
@@ -85,18 +90,20 @@ export function NavProjects({
                 align={isMobile ? "end" : "start"}
               >
 
-                  <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+                  <DropdownMenuItem onClick={() => {setTitle(item.title); setSelectedId(item.id); setRenameOpen(true);}}>
                     <PenLine className="text-muted-foreground" />
                     <span>Rename</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem onClick={() => setShareOpen(true)}>
+                  {/* <DropdownMenuItem onClick={() => setShareOpen(true)}>
+                    <Forward className="text-muted-foreground" />
                     <span>Share Chat</span>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
 
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
+                    <Trash2 className="text-muted-foreground"/>
                     <span>Delete Chat</span>
                   </DropdownMenuItem>
               </DropdownMenuContent>
@@ -104,47 +111,40 @@ export function NavProjects({
 
             {/* Rename Dialog */}
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent>
+        <DialogContent className="[&>button]:hidden">
           <DialogHeader>
             <DialogTitle>Rename Chat</DialogTitle>
             <DialogDescription>
-              Enter a new name for this chat conversation.
             </DialogDescription>
           </DialogHeader>
-          {/* <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="chat-name" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="chat-name"
-                defaultValue="My Chat Conversation"
-                className="col-span-3"
+          <div>
+            <input value={title} onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-4 py-3 rounded-md border focus:outline-none focus:ring text-sm border-gray-300 focus:ring-[#a6d1eb]"
               />
-            </div>
-          </div> */}
+          </div>
+
           <DialogFooter>
+            <span>{selectedId}</span>
             <Button type="button" variant="outline" onClick={() => setRenameOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" onClick={() => setRenameOpen(false)}>
-              Save Changes
+            <Button type="submit" onClick={() => {setRenameOpen(false); renameChat(selectedId, title)}}>
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Share Dialog */}
-      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
-        <DialogContent>
+      {/* <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+        <DialogContent className="[&>button]:hidden">
           <DialogHeader>
             <DialogTitle>Share Chat</DialogTitle>
             <DialogDescription>
               Generate a shareable link for this chat conversation.
             </DialogDescription>
           </DialogHeader>
-          {/* <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="share-link" className="text-right">
                 Link
               </Label>
@@ -155,7 +155,6 @@ export function NavProjects({
                 readOnly
               />
             </div>
-          </div> */}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setShareOpen(false)}>
               Cancel
@@ -165,23 +164,22 @@ export function NavProjects({
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       {/* Delete Dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent>
+        <DialogContent className="[&>button]:hidden">
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>Delete {item.title}?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              chat conversation and remove all messages from our servers.
+              This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setDeleteOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="destructive" onClick={() => setDeleteOpen(false)}>
+            <Button type="submit" variant="destructive" onClick={() => {deleteChat(item.id); setDeleteOpen(false)}}>
               Delete
             </Button>
           </DialogFooter>

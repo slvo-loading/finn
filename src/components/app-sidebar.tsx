@@ -37,9 +37,10 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     createChat: () => void;
     chats: Chat[];
     deleteChat: (chatId: string) => void;
+    renameChat: (chatId: string, newTitle: string) => void;
   };
   
-  export function AppSidebar({ createChat, chats, deleteChat, ...props }: AppSidebarProps) {
+  export function AppSidebar({ createChat, chats, deleteChat, renameChat, ...props }: AppSidebarProps) {
     const { toggleSidebar, open } = useSidebar();
   
     return (
@@ -57,7 +58,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
             </button>
           )}
           <NavMain createChat={createChat} />
-          <NavProjects chats={chats} deleteChat={deleteChat}/>
+          <NavProjects chats={chats} deleteChat={deleteChat} renameChat={renameChat}/>
         </SidebarContent>
         <SidebarFooter>
         <NavUser user={data.user} />

@@ -29,9 +29,12 @@ import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4 } from 'uuid';
 
 type Chat = {
-  name: string;
-  messages: string[]; // Adjust the type of messages if needed
-  index: number;
+  id: string;
+  user_id: string;
+  title: string;
+  messages: any[]; 
+  created_at: string;
+  updated_at: string;
 };
 
 export default function Home() {
@@ -125,7 +128,7 @@ export default function Home() {
   };
 
   //deletes a chat
-  const deleteChat = async (chatId) => {
+  const deleteChat = async (chatId: string) => {
     const { error } = await supabase
       .from("chats")
       .delete()
@@ -140,23 +143,23 @@ export default function Home() {
   };
 
   // renames a chat
-  // const renameChat = async (chatId, newTitle) => {
-  //   const { error } = await supabase
-  //     .from("chats")
-  //     .update({ title: newTitle, updated_at: new Date().toISOString() })
-  //     .eq("id", chatId);
+  const renameChat = async (chatId: string, newTitle: string) => {
+    const { error } = await supabase
+      .from("chats")
+      .update({ title: newTitle })
+      .eq("id", chatId);
   
-  //   if (error) {
-  //     console.error("Error renaming chat:", error);
-  //   } else {
-  //     // Update local state for immediate UI refresh
-  //     setChats((prev) =>
-  //       prev.map((chat) =>
-  //         chat.id === chatId ? { ...chat, title: newTitle } : chat
-  //       )
-  //     );
-  //   }
-  // };
+    if (error) {
+      console.error("Error renaming chat:", error);
+    } else {
+      // Update local state for immediate UI refresh
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === chatId ? { ...chat, title: newTitle } : chat
+        )
+      );
+    }
+  };
   
   
   //scroll feature
@@ -192,7 +195,7 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* left sidebar */}
-      <AppSidebar createChat={handleNewChat} chats={chats} deleteChat={deleteChat}/>
+      <AppSidebar createChat={handleNewChat} chats={chats} deleteChat={deleteChat} renameChat={renameChat}/>
 
       {/* water popup */}
       {/* <div className="flex-shrink-0 flex items-center justify-center bg-white h-full w-64">
