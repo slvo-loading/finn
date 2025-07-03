@@ -1,6 +1,5 @@
 "use client"
 
-import type { UIMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
 import { Copy, Pencil, RefreshCcw, Fish, Star } from 'lucide-react';
 import { ThumbsUp ,ThumbsDown } from "phosphor-react";
@@ -14,11 +13,16 @@ import {
 import {CopyButton} from "@/components/copy-button"
 
 
-export function RenderResponse({ messages, isThinking }: { messages: UIMessage[], isThinking:boolean }) {
+export function RenderResponse({ 
+  messages, 
+  isThinking 
+}: {
+   messages: UIMessage[], 
+   isThinking:boolean }) {
 
     return (
         <div className="flex flex-col gap-5 p-4">
-          {messages.map(message => {
+          {messages && messages.map(message => {
             const wholeMessage = message.parts
             .filter(p => p.type === "text")
             .map(p => Array.isArray(p.text) ? p.text.join("") : p.text)

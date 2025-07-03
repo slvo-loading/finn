@@ -1,14 +1,16 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Plus, ArrowUp } from "lucide-react"
+import { ArrowUp } from "lucide-react"
 import { ModelSelector } from "@/components/model-selector"
 import { MODEL_COST_PER_TOKEN_USD } from "@/lib/model-cost";
+import { useChat } from '@ai-sdk/react';
+import { ExtendedUIMessage, ActiveChat } from "@/lib/types";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -18,50 +20,80 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-import { useEffect } from 'react';
-import { useChat } from '@ai-sdk/react';
-import type { UIMessage } from 'ai';
 
-type ChatInputProps = {
+export function ChatInput({ 
+  chats,
+  handleNewChat,
+  handleNewMessage, 
+  model,
+  handleThinking, 
+  waterLevel, 
+  updateWaterLevel, 
+  activeChatId,
+  activeChatMessages,
+  saveMessageToSupabase,
+}: {
+  chats: Chat[];
+  handleNewChat: (message: string) => Promise<void>;
+  handleNewMessage: (message: UIMessage) => void;
   model: string;
-  onNewMessage: (message: UIMessage) => void; 
-  setIsThinking: (value: boolean) => void;
+  handleThinking: (thinking: boolean) => void;
   waterLevel: number; 
-  setWaterLevel: (value: number) => void;
-};
+  updateWaterLevel: (level: number) => void;
+  activeChatId: string;
+  activeChatMessages: UIMessage[];
+  saveMessageToSupabase: (chatId: string, message: UIMessage) => Promise<void>;
+}) {
 
-export function ChatInput({ model, onNewMessage, setIsThinking, waterLevel, setWaterLevel }: ChatInputProps) {
+  const [save, setSave] = useState(false);
 
-  const { messages, input, handleInputChange, handleSubmit,  } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, } = useChat({
     api: `/api/chat?model=${encodeURIComponent(model)}`,
-    key: model,
+    key: activeChatId || "new-chat",
+    initialMessages: activeChatMessages || [],
     onResponse: () => {
-      setIsThinking(false);
+      handleThinking(false);
     },
-    onFinish: (finalMessage, { usage }) => {
+    onFinish: async(finalMessage, { usage }) => {
+      const chatExists = chats.some(chat => chat.id === activeChatId);
+      if(!chatExists) {
+        await handleNewChat(finalMessage.content)
+      }
 
-      console.log("usage:", usage);
+      setSave(true)
+
+      //water level management
       const tokensUsed = usage.totalTokens || 0;
-      console.log("Tokens used:", tokensUsed);
-
       const costPerToken = MODEL_COST_PER_TOKEN_USD[model]; 
-  
       const costUSD = tokensUsed * costPerToken;
-      setWaterLevel(prev => Math.max(prev - costUSD, 0));
+      updateWaterLevel(Math.max(waterLevel - costUSD, 0));
     },
   }); 
 
-  useEffect(() => {
-    const last = messages.at(-1);
-    if (last) onNewMessage({...last, model,}); // Send message to parent
-  }, [messages, onNewMessage, model]);
 
-  const wrappedHandleSubmit = async (e: any) => {
-    setIsThinking(true); // AI starts thinking
+  //update parent with new messages for the UI only
+  useEffect(() => {
+    if (messages.length > 0) {
+      handleNewMessage(messages.at(-1));
+    }
+  }, [messages, handleNewMessage]);
+
+
+  useEffect(() => {
+    if (save && messages.length >= 2) {
+      console.log("sending messages to be saved:", messages.slice(-2));
+      saveMessageToSupabase(activeChatId, messages.slice(-2));
+      setSave(false);
+    }
+  }, [messages, save, activeChatId, saveMessageToSupabase]);
+
+
+  const wrappedHandleSubmit = async (e: React.FormEvent) => {
+    handleThinking(true); // AI starts thinking
     await handleSubmit(e);
   };
   
-  
+
   return (
       <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={wrappedHandleSubmit}>
         <Textarea name="prompt" placeholder="Ask anything" onChange={handleInputChange} value={input}/>

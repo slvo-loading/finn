@@ -10,30 +10,18 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
 type NavMainProps = {
-    createChat: () => void; // Function to create a new chat
-    chats: { name: string; messages: string[] }[]; // Array of chat objects
+    openNewChat: () => void; // Function to create a new chat
   };
 
-export function NavMain({ createChat }: NavMainProps) {
+export function NavMain({ openNewChat }: NavMainProps) {
   return (
     <SidebarGroup>
             <SidebarMenu>
                 <SidebarMenuItem >
                 
                 <SidebarMenuButton asChild>
-                  <Button variant="ghost" size="sm" className="w-full justify-start" onClick={createChat}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start" onClick={openNewChat}>
                     <MessageCirclePlus/>
                     <span>New Chat</span>
                   </Button>

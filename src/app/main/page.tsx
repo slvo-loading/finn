@@ -1,18 +1,19 @@
 "use client"
 
-import { AppSidebar } from "@/components/app-sidebar"
-import { ChatInput } from "@/components/chat-input"
 import React from "react"
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
+import { AppSidebar } from "@/components/app-sidebar"
 import { useModelSelector } from "@/hooks/useModelSelector"
-import { RenderResponse } from "@/components/render-response"
-import type { UIMessage } from 'ai';
 import { Button } from "@/components/ui/button"
-import { Fish, ShoppingBasket, Shell, Sparkles } from "lucide-react"
+import { Fish, ShoppingBasket, Sparkles } from "lucide-react"
 import { RefillButton } from "@/components/refill-button"
 import { WaterTank } from "@/components/water-tank"
 import { useRouter } from "next/navigation";
 import { CoinDisplay } from "@/components/coin-display"
+import { ChatArea } from "@/components/chat-area"
+import { supabase } from "@/lib/supabase";
+import { v4 as uuidv4 } from "uuid";
+import { Chat, UIMessage } from "@/lib/types";
 import {
   HoverCard,
   HoverCardContent,
@@ -25,24 +26,14 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 
-import { supabase } from "@/lib/supabase";
-import { v4 as uuidv4 } from 'uuid';
-
-type Chat = {
-  id: string;
-  user_id: string;
-  title: string;
-  messages: any[]; 
-  created_at: string;
-  updated_at: string;
-};
 
 export default function Home() {
   const model = useModelSelector((state) => state.model);
   const [chats, setChats] = useState<Chat[]>([]);
-
-  const [allMessages, setAllMessages] = useState<UIMessage[]>([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [firstMessage, setFirstMessage] = useState<string | null>(null);
+  const [activeChatId, setActiveChatId] = useState<string>(uuidv4());
+  const [activeChatMessages, setActiveChatMessages] = useState<UIMessage[]>([]);
 
   const [waterLevel, setWaterLevel] = useState(0.10); // % or liters
   const fullTank = 0.10;
@@ -50,59 +41,29 @@ export default function Home() {
   const adRefillAmount = 0.01
 
   const router = useRouter();
+  const [user, setUser] = useState<any>(null);
 
 
-  // creates a new chat in supabase
-  const createNewChat = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    console.log("Session access token:", sessionData?.session?.access_token);
+  // fetches user from supabase
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error fetching user:", error);
+      } else {
+        setUser(data.user);
+      }
+    };
 
-  
-    // 🔑 Use getUser instead of getSession for clarity
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-  
-    console.log("User data:", userData);
-    if (userError) {
-      console.error("User error:", userError);
-      return null;
-    }
+    fetchUser();
+  }, []);
 
-    console.log("Creating new chat...");
-  
-    const user_id = userData?.user?.id;
-    if (!user_id) {
-      console.error("No user found.");
-      return null;
-    }
-    console.log("User ID:", user_id);
-  
-    const { data, error } = await supabase
-      .from("chats")
-      .insert([
-        {
-          id: uuidv4(),
-          user_id: user_id,
-          title: "Untitled Chat",
-          messages: [],
-        },
-      ])
-      .select()
-      .single();
-  
-    if (error) {
-      console.error("Error creating new chat:", error);
-      return null;
-    }
-  
-    console.log("New chat created:", data);
-    return data;
-  };
 
   // fetches all chats from supabase
   useEffect(() => {
     fetchChats();
   }, []);
-  
+    
   const fetchChats = async () => {
     const { data, error } = await supabase
       .from("chats")
@@ -115,17 +76,165 @@ export default function Home() {
       setChats(data);
     }
   };
-  
-  //creates and fetches chats
-  const handleNewChat = async () => {
-    const newChat = await createNewChat();
-    if (newChat) {
-      console.log("New chat created:", newChat);
-      setChats((prev) => [newChat, ...prev]);
-      fetchChats(); 
-      console.log("Chats after creation:", chats);
+
+  useEffect(() => {
+    console.log("Fetched chats:", chats);
+  }, [chats]);
+
+
+  // new chat functions
+  const openNewChat = () => {
+    console.log("Opening new chat");
+    setActiveChatId(uuidv4());
+    setActiveChatMessages([]);
+
+    console.log("New Chat", activeChatId);
+    console.log("New Messages", activeChatMessages);
+  };
+
+
+  const handleNewChat = async (message: string) => {
+    if (!user) {
+      console.error("User not authenticated");
+      return;
+    }
+
+    const chatId = uuidv4();
+    const newChat = {
+      id: chatId,
+      user_id: user.id,
+      title: generateTitle(message),
+    };
+    console.log("New chat object:", newChat);
+
+    try {
+      const { data, error } = await supabase
+        .from("chats")
+        .insert([newChat])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setActiveChatId(chatId);
+      console.log("New chat created:", activeChatId);
+
+      fetchChats();
+    } catch (error) {
+      console.error("Error creating chat:", error);
     }
   };
+
+
+  const generateTitle = (message: string) => {
+    return message.split(" ").slice(0, 5).join(" ").substring(0, 50);
+  };
+
+
+  // selecting existing chat
+  const handleSelectedChat = async (chatId: string) => {
+    console.log("Selecting chat with ID:", chatId);
+
+    const { data , error } = await supabase
+    .from("chats")
+    .select("id")
+    .eq("id", chatId)
+    .single();
+
+    if (error) {
+      console.error("Error fetching chat:", error);
+      return;
+    }
+
+    setActiveChatId(chatId)
+    console.log("Selected Chat:", activeChatId);
+
+    const messages = await fetchMessages(chatId);
+    setActiveChatMessages(messages)
+    console.log("Fetched messages for chat:", activeChatMessages);
+    
+  };
+
+
+  // loads messages for an existing chat
+  const fetchMessages = async (chatId: string): Promise<UIMessage[]> => {
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("chat_id", chatId)
+      .order("created_at", { ascending: true });
+  
+    if (error) {
+      console.error("Error fetching messages:", error);
+      return [];
+    }
+  
+    return data.map((msg) => ({
+      id: msg.id,
+      role: msg.role,
+      content: msg.content,
+      parts: msg.parts,
+      model: msg.model,
+      createdAt: msg.created_at,
+    }));
+  };
+  
+
+  //updates the last messsage to stream for the ui
+  const handleNewMessage = useCallback((message: UIMessage) => {
+    setActiveChatMessages((prevMessages) => {
+      const last = prevMessages.at(-1);
+  
+      if (last?.id === message.id) {
+        // Streaming continuation — replace the last message
+        return [...prevMessages.slice(0, -1), message];
+      } else {
+        // New message — append it
+        return [...prevMessages, message];
+      }
+    });
+  }, []);
+
+
+  // on finish, save the final message to supabase
+  const saveMessageToSupabase = async (chatId: string, messages: UIMessage[]) => {
+    console.log("messages recieved for saving:", messages);
+    const messageRecords = messages.map(message => ({
+      id: message.id,
+      chat_id: chatId,
+      user_id: user.id,
+      role: message.role,
+      content: message.content,
+      parts: message.parts,
+      model: "deepseek",
+      // model: message.model,
+      created_at: message.createdAt
+    }));
+    
+    const { data, error } = await supabase
+    .from("messages")
+    .insert(messageRecords);
+
+    if (error) {
+      console.error("Error saving message:", error);
+    } else {
+      console.log("Message saved successfully:", data);
+    }
+  };
+
+  // checks for when activeChat changes
+  useEffect(() => {
+    if (activeChatId) {
+      console.log("✅ Active chat has been updated:", activeChatId);
+    } else {
+      console.log("🕳️ No active chat id selected.");
+    }
+  }, [activeChatId]);
+
+  useEffect(() => {
+    console.log("activeChatMessages updated:", activeChatMessages);
+  }, [activeChatMessages]);
+  
 
   //deletes a chat
   const deleteChat = async (chatId: string) => {
@@ -141,6 +250,7 @@ export default function Home() {
       setChats((prev) => prev.filter((chat) => chat.id !== chatId));
     }
   };
+
 
   // renames a chat
   const renameChat = async (chatId: string, newTitle: string) => {
@@ -160,62 +270,72 @@ export default function Home() {
       );
     }
   };
-  
-  
-  //scroll feature
-  const chatContainer = useRef<HTMLDivElement>(null);
-  const scroll = () => {
-    const {offsetHeight, scrollHeight, scrollTop } = chatContainer.current as HTMLDivElement;
-    if (scrollHeight >= scrollTop + offsetHeight) {
-      chatContainer.current?.scrollTo(0, scrollHeight + 200)
-    } 
+
+
+  const handleThinking = (thinking: boolean) => {
+    setIsThinking(thinking);
   }
 
-  useEffect(() => {
-    scroll();
-  }, [allMessages]);
 
-  
+  const updateWaterLevel = (level: number) => {
+    setWaterLevel(level);
+    // update supabase later
+  };
 
-  const handleNewMessage = useCallback((message: UIMessage) => {
-    setAllMessages((prev) => {
-      const last = prev.at(-1);
-  
-      if (last?.id === message.id) {
-        // streaming continuation — replace last
-        return [...prev.slice(0, -1), message];
-      }
-  
-      // new user message or new assistant message
-      return [...prev, message];
-    });
-  }, []);
-  
+
+  const clearFirstMessage = () => {
+    console.log("Clearing first message");
+    setFirstMessage(null);
+  };
+
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* left sidebar */}
-      <AppSidebar createChat={handleNewChat} chats={chats} deleteChat={deleteChat} renameChat={renameChat}/>
+      <AppSidebar openNewChat={openNewChat} handleSelectedChat={handleSelectedChat} chats={chats} deleteChat={deleteChat} renameChat={renameChat}/>
 
-      {/* water popup */}
-      {/* <div className="flex-shrink-0 flex items-center justify-center bg-white h-full w-64">
-        <div className="w-3/4 h-full my-5 border-2 border-gray-200"></div>
-      </div> */}
       <ResizablePanelGroup direction="horizontal" autoSaveId="resizable-panel-group">
         <ResizablePanel className="flex flex-col">
-                {/* text area */}
             <div className='flex-1 flex flex-col min-w-0 items-center min-h-0'>
               <div className="flex justify-end w-full px-2 pt-2 flex-shrink-0 gap-2">
                 <CoinDisplay coins={coins}/>
                 <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adRefillAmount={adRefillAmount} fullTank={fullTank}/>
               </div>
+
+              {/* text area
+              { activeChat ? (
+              <div>
+                <div ref={chatContainer} className="flex-1 w-full max-w-2xl overflow-y-auto px-4 py-6 min-h-0 hide-scrollbar">
+                  <RenderResponse messages={allMessages} isThinking={isThinking} />
+                </div>
+                <div className="flex-shrink-0">
+                <ChatInput model={model} setIsThinking={setIsThinking} waterLevel={waterLevel} setWaterLevel={setWaterLevel}/>
+                </div>
+              </div>
+              ) : (
               <div ref={chatContainer} className="flex-1 w-full max-w-2xl overflow-y-auto px-4 py-6 min-h-0 hide-scrollbar">
-                <RenderResponse messages={allMessages} isThinking={isThinking} />
-              </div>
-              <div className="flex-shrink-0">
-              <ChatInput model={model} onNewMessage={handleNewMessage} setIsThinking={setIsThinking} waterLevel={waterLevel} setWaterLevel={setWaterLevel}/>
-              </div>
+                <Button onClick={() => handleNewChat("Hi!", "gpt-4o")}></Button>
+                </div>
+              )} */}
+
+              <ChatArea
+                chats={chats}
+                activeChatId={activeChatId}
+                activeChatMessages={activeChatMessages}
+                handleNewMessage={handleNewMessage}
+                model={model}
+                isThinking={isThinking}
+                handleThinking={handleThinking}
+                waterLevel={waterLevel}
+                updateWaterLevel={updateWaterLevel}
+                handleNewChat={handleNewChat}
+                saveMessageToSupabase={saveMessageToSupabase}
+                firstMessage={firstMessage}
+                clearFirstMessage={clearFirstMessage}
+              />
+
             </div>
+            
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={25}>

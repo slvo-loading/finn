@@ -1,12 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase";
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Chat } from "@/lib/types"
 
 import {
-  Forward,
   MoreHorizontal,
   Trash2,
   PenLine
@@ -36,32 +34,20 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog"
 
-import { Button } from "@/components/ui/button"
-
-type Chat = {
-  id: string;
-  user_id: string;
-  title: string;
-  messages: any[]; 
-  created_at: string;
-  updated_at: string;
-};
-
 export function NavProjects({
-  chats, deleteChat, renameChat
+  chats, deleteChat, renameChat, handleSelectedChat
 }: {
   chats: Chat[],
   deleteChat: (chatId: string) => void,
-  renameChat: (chatId: string, newTitle: string) => void
+  renameChat: (chatId: string, newTitle: string) => void,
+  handleSelectedChat: (chatId: string) => void
 }) {
 
   const { isMobile } = useSidebar()
   const [renameOpen, setRenameOpen] = useState(false)
-  const [shareOpen, setShareOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [title, setTitle] = useState("")
   const [selectedId, setSelectedId] = useState("")
@@ -73,8 +59,8 @@ export function NavProjects({
       <SidebarMenu>
         {chats.map((item) => (
           <SidebarMenuItem key={item.id}>
-            <SidebarMenuButton asChild>
-                <span>{item.title}</span>
+            <SidebarMenuButton onClick={() => handleSelectedChat(item.id)}>
+              <span>{item.id}</span>
             </SidebarMenuButton>
 
             <DropdownMenu>
@@ -95,14 +81,9 @@ export function NavProjects({
                     <span>Rename</span>
                   </DropdownMenuItem>
 
-                  {/* <DropdownMenuItem onClick={() => setShareOpen(true)}>
-                    <Forward className="text-muted-foreground" />
-                    <span>Share Chat</span>
-                  </DropdownMenuItem> */}
-
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
+                  <DropdownMenuItem onClick={() => {setSelectedId(item.id); setTitle(item.title); setDeleteOpen(true)}}>
                     <Trash2 className="text-muted-foreground"/>
                     <span>Delete Chat</span>
                   </DropdownMenuItem>
@@ -124,7 +105,6 @@ export function NavProjects({
           </div>
 
           <DialogFooter>
-            <span>{selectedId}</span>
             <Button type="button" variant="outline" onClick={() => setRenameOpen(false)}>
               Cancel
             </Button>
@@ -135,42 +115,11 @@ export function NavProjects({
         </DialogContent>
       </Dialog>
 
-      {/* Share Dialog */}
-      {/* <Dialog open={shareOpen} onOpenChange={setShareOpen}>
-        <DialogContent className="[&>button]:hidden">
-          <DialogHeader>
-            <DialogTitle>Share Chat</DialogTitle>
-            <DialogDescription>
-              Generate a shareable link for this chat conversation.
-            </DialogDescription>
-          </DialogHeader>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="share-link" className="text-right">
-                Link
-              </Label>
-              <Input
-                id="share-link"
-                value="https://chat.example.com/shared/abc123"
-                className="col-span-3"
-                readOnly
-              />
-            </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setShareOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" onClick={() => setShareOpen(false)}>
-              Copy Link
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog> */}
-
       {/* Delete Dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="[&>button]:hidden">
           <DialogHeader>
-            <DialogTitle>Delete {item.title}?</DialogTitle>
+            <DialogTitle>Delete {title}?</DialogTitle>
             <DialogDescription>
               This action cannot be undone.
             </DialogDescription>
@@ -179,7 +128,7 @@ export function NavProjects({
             <Button type="button" variant="outline" onClick={() => setDeleteOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="destructive" onClick={() => {deleteChat(item.id); setDeleteOpen(false)}}>
+            <Button type="submit" variant="destructive" onClick={() => {deleteChat(selectedId); setDeleteOpen(false)}}>
               Delete
             </Button>
           </DialogFooter>

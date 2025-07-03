@@ -11,11 +11,10 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { PanelLeftOpen } from 'lucide-react'
-import { UUID } from "crypto"
+import { Chat } from "@/lib/types"
 
 // This is sample data.
 const data = {
@@ -24,23 +23,16 @@ const data = {
     email: "user@example.com",
   },}
 
-  type Chat = {
-    id: string;
-    user_id: string;
-    title: string;
-    messages: any[]; 
-    created_at: string;
-    updated_at: string;
-  };
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-    createChat: () => void;
+    openNewChat: () => void;
+    handleSelectedChat: (chatId: string) => void;
     chats: Chat[];
     deleteChat: (chatId: string) => void;
     renameChat: (chatId: string, newTitle: string) => void;
   };
   
-  export function AppSidebar({ createChat, chats, deleteChat, renameChat, ...props }: AppSidebarProps) {
+  export function AppSidebar({ openNewChat, handleSelectedChat, chats, deleteChat, renameChat, ...props }: AppSidebarProps) {
     const { toggleSidebar, open } = useSidebar();
   
     return (
@@ -57,8 +49,8 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
               <PanelLeftOpen className="w-4 h-4" />
             </button>
           )}
-          <NavMain createChat={createChat} />
-          <NavProjects chats={chats} deleteChat={deleteChat} renameChat={renameChat}/>
+          <NavMain openNewChat={openNewChat} />
+          <NavProjects chats={chats} deleteChat={deleteChat} renameChat={renameChat} handleSelectedChat={handleSelectedChat}/>
         </SidebarContent>
         <SidebarFooter>
         <NavUser user={data.user} />

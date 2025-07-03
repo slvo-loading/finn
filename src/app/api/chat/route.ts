@@ -17,6 +17,7 @@ export async function POST(req: Request) {
   // }
 
   try {
+    console.log('Received request:', req.url);
     const url = new URL(req.url);
     const model = url.searchParams.get('model');
 
@@ -35,21 +36,22 @@ export async function POST(req: Request) {
         deepseek,
       });
 
+    console.log('Using model:', model);
 
-  const result = await streamText({
-    model: registry.languageModel(model),
-    system: 'You are a helpful assistant that answers questions about the environmental impact of AI and machine learning.',
-    messages,
-    maxTokens: 100,
-    temperature: 0.7,
-    onFinish: (res) => {
-      console.log(res.usage)
-    }
-    // headers: {
-    //   'Cache-Control': 'no-cache',
-    //   'x-request-id': crypto.randomUUID(),
-    // },
-  })
+    const result = await streamText({
+      model: registry.languageModel(model),
+      system: 'You are a helpful assistant that answers questions about the environmental impact of AI and machine learning.',
+      messages,
+      maxTokens: 100,
+      temperature: 0.7,
+      onFinish: (res) => {
+        console.log(res.usage)
+      }
+      // headers: {
+      //   'Cache-Control': 'no-cache',
+      //   'x-request-id': crypto.randomUUID(),
+      // },
+    })
 
   return result.toDataStreamResponse({
     sendUsage: true,
