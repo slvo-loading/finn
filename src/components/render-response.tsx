@@ -31,7 +31,7 @@ export function RenderResponse({
             return(
             <div key={message.id} className={`flex flex-col  items-${message.role === 'user' ? 'end' : 'start'}`}>
                 <div className={`w-fit px-3 py-2 rounded-md whitespace-pre-wrap flex ${message.role === 'user'
-                  ? 'bg-gray-200 fade-in'
+                  ? 'bg-gray-100'
                   : ''
                 }`}>
 

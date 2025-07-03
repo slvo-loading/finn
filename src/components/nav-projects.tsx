@@ -60,7 +60,7 @@ export function NavProjects({
         {chats.map((item) => (
           <SidebarMenuItem key={item.id}>
             <SidebarMenuButton onClick={() => handleSelectedChat(item.id)}>
-              <span>{item.id}</span>
+              <span>{item.title}</span>
             </SidebarMenuButton>
 
             <DropdownMenu>

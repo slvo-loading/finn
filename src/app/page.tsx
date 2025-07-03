@@ -186,6 +186,7 @@ export default function Home() {
                       <RefillButton waterLevel={waterLevel} setWaterLevel={setWaterLevel} coins={coins} setCoins={setCoins} adRefillAmount={adRefillAmount} fullTank={fullTank}/>
                   </div>
                 </div>
+
                 <div ref={chatContainer} className="flex-1 w-full max-w-2xl overflow-y-auto px-4 py-6 min-h-0 hide-scrollbar">
                   <RenderResponse messages={allMessages} isThinking={isThinking} />
                 </div>
@@ -193,6 +194,7 @@ export default function Home() {
                 <ChatInput model={model} onNewMessage={handleNewMessage} setIsThinking={setIsThinking} waterLevel={waterLevel} setWaterLevel={setWaterLevel}/>
                 </div>
               </div>
+              
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={25}>
