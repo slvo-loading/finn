@@ -11,14 +11,15 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import {CopyButton} from "@/components/copy-button"
+import { UIMessage } from "@/lib/types";
 
 
-export function RenderResponse({ 
+export function RenderResponse({
   messages, 
   isThinking 
 }: {
-   messages: UIMessage[], 
-   isThinking:boolean }) {
+  messages: UIMessage[], 
+  isThinking:boolean }) {
 
     return (
         <div className="flex flex-col gap-5 p-4">
@@ -58,17 +59,6 @@ export function RenderResponse({
                       </HoverCardTrigger>
                       <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
                           <p className="text-[8px] font-medium">Copy</p>
-                      </HoverCardContent>
-                    </HoverCard>
-
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
-                          <Star className="text-gray-400 fade-in w-1 h-1"/>
-                        </Button>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
-                          <p className="text-[8px] font-medium">Save</p>
                       </HoverCardContent>
                     </HoverCard>
                   
@@ -118,19 +108,7 @@ export function RenderResponse({
                       </HoverCardContent>
                     </HoverCard> */}
 
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <Button variant="ghost" size="icon" className="fade-in w-7 h-7">
-                          <Star className="text-gray-400 fade-in w-1 h-1"/>
-                        </Button>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="flex justify-center w-fit px-2 py-1 text-xs">
-                          <p className="text-[8px] font-medium">Save</p>
-                      </HoverCardContent>
-                    </HoverCard>
-
                     <Button variant="ghost" size="2xs" className="fade-in px-2">
-                      {/* <RefreshCcw className="w-3 h-3 text-gray-400 fade-in"/> */}
                       <span className="text-gray-400 text-xs font-medium">{AVAILABLE_MODELS.find(m => m.value === message.model)?.label || message.model}</span>
                     </Button>
                   </div>

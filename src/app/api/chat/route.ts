@@ -5,16 +5,6 @@ import { streamText, createProviderRegistry } from 'ai';
 
 
 export async function POST(req: Request) {
-  // try{
-  // const body = await req.json();
-  // console.log('Full received body:', body);
-  // const { messages, model } = body;
-
-  // console.log('Received model:', model);
-
-  // if (!model) {
-  //   return new Response('Model is required', { status: 400 });
-  // }
 
   try {
     console.log('Received request:', req.url);
@@ -44,13 +34,6 @@ export async function POST(req: Request) {
       messages,
       maxTokens: 100,
       temperature: 0.7,
-      onFinish: (res) => {
-        console.log(res.usage)
-      }
-      // headers: {
-      //   'Cache-Control': 'no-cache',
-      //   'x-request-id': crypto.randomUUID(),
-      // },
     })
 
   return result.toDataStreamResponse({

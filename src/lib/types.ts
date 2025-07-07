@@ -2,6 +2,10 @@ import type { UIMessage } from "ai";
 
 export type { UIMessage } from "ai";
 
+export type ExtendUIMessage = UIMessage && {
+    model: string
+}
+
 export type Chat = {
   id: string;
   title: string;
@@ -10,5 +14,5 @@ export type Chat = {
 
 export type ActiveChat = {
     id: null;
-    messages: (UIMessage | ExtendedUIMessage)[];
+    messages: (UIMessage | ExtendUIMessage)[];
   };

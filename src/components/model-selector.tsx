@@ -8,13 +8,14 @@ import {
     SelectValue,
   } from "@/components/ui/select"
   import { useModelSelector } from "@/hooks/useModelSelector";
-
   import { AVAILABLE_MODELS } from "@/lib/models";
 
 export function ModelSelector() {
-    const model = useModelSelector((state) => state.model);
-    const setModel = useModelSelector((state) => state.setModel);
+    const model = useModelSelector(state => state.model);
+    const setModel = useModelSelector(state => state.setModel);
+    
     const currentModelLabel = AVAILABLE_MODELS.find(m => m.value === model)?.label || "Select Model";
+ 
 
     return(
         <Select value={model} onValueChange={ setModel }>

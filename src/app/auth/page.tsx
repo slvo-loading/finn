@@ -47,7 +47,7 @@ export default function LoginPage() {
     if (error) {
       toast.error("Invalid or expired code. Please try again.");
     } else {
-      router.push("/main");
+      router.push("/");
     }
   };
 
@@ -55,7 +55,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:3000/main",
+        redirectTo: "http://localhost:3000",
       },
     });
 

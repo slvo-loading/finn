@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ArrowUp } from "lucide-react"
+import { ArrowUp, CircleStop } from "lucide-react"
 import { ModelSelector } from "@/components/model-selector"
 import { MODEL_COST_PER_TOKEN_USD } from "@/lib/model-cost";
 import { useChat } from '@ai-sdk/react';
-import { ExtendedUIMessage, ActiveChat } from "@/lib/types";
+import { UIMessage, Chat, ExtendUIMessage } from '@/lib/types';
 
 import {
   AlertDialog,
@@ -22,10 +22,10 @@ import {
 
 
 export function ChatInput({ 
+  model,
   chats,
   handleNewChat,
-  handleNewMessage, 
-  model,
+  handleNewMessage,
   handleThinking, 
   waterLevel, 
   updateWaterLevel, 
@@ -33,27 +33,25 @@ export function ChatInput({
   activeChatMessages,
   saveMessageToSupabase,
 }: {
+  model: string;
   chats: Chat[];
   handleNewChat: (message: string) => Promise<void>;
-  handleNewMessage: (message: UIMessage) => void;
-  model: string;
+  handleNewMessage: (message: UIMessage, model: string) => void;
   handleThinking: (thinking: boolean) => void;
   waterLevel: number; 
   updateWaterLevel: (level: number) => void;
   activeChatId: string;
-  activeChatMessages: UIMessage[];
-  saveMessageToSupabase: (chatId: string, message: UIMessage) => Promise<void>;
+  activeChatMessages: ExtendUIMessage[];
+  saveMessageToSupabase: (chatId: string, message: ExtendUIMessage[], model: string) => Promise<void>;
 }) {
 
   const [save, setSave] = useState(false);
 
-  const { messages, input, handleInputChange, handleSubmit, } = useChat({
+
+  const { messages, input, handleInputChange, handleSubmit, status, stop } = useChat({
     api: `/api/chat?model=${encodeURIComponent(model)}`,
     key: activeChatId || "new-chat",
-    initialMessages: activeChatMessages || [],
-    onResponse: () => {
-      handleThinking(false);
-    },
+    initialMessages: activeChatMessages,
     onFinish: async(finalMessage, { usage }) => {
       const chatExists = chats.some(chat => chat.id === activeChatId);
       if(!chatExists) {
@@ -73,30 +71,33 @@ export function ChatInput({
 
   //update parent with new messages for the UI only
   useEffect(() => {
-    if (messages.length > 0) {
-      handleNewMessage(messages.at(-1));
+    const latestMessage = messages.at(-1);
+    if (messages.length > 0 && latestMessage) {
+      handleNewMessage(latestMessage, model);
     }
-  }, [messages, handleNewMessage]);
+  }, [messages]);
 
 
   useEffect(() => {
     if (save && messages.length >= 2) {
       console.log("sending messages to be saved:", messages.slice(-2));
-      saveMessageToSupabase(activeChatId, messages.slice(-2));
+      saveMessageToSupabase(activeChatId, messages.slice(-2), model);
       setSave(false);
     }
   }, [messages, save, activeChatId, saveMessageToSupabase]);
 
+  useEffect(() => {
+    if (status === 'submitted') {
+      handleThinking(true);
+    } else {
+      handleThinking(false);
+    }
+  }, [status, handleThinking]);
 
-  const wrappedHandleSubmit = async (e: React.FormEvent) => {
-    handleThinking(true); // AI starts thinking
-    await handleSubmit(e);
-  };
-  
 
   return (
-      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={wrappedHandleSubmit}>
-        <Textarea name="prompt" placeholder="Ask anything" onChange={handleInputChange} value={input}/>
+      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={handleSubmit}>
+        <Textarea name="prompt" placeholder="Ask anything" onChange={handleInputChange} value={input} disabled={status !== 'ready'}/>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* <Button><Plus/></Button> */}
@@ -104,9 +105,15 @@ export function ChatInput({
           </div>
           
           {waterLevel > 0 ? (
-            <Button type="submit">
-              <ArrowUp />
-            </Button>
+            status === "submitted" || status === "streaming" ? (
+              <Button type="button" onClick={() => stop()}>
+              <CircleStop />
+              </Button>
+            ) : (
+              <Button type="submit">
+                <ArrowUp />
+              </Button>
+            )
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>

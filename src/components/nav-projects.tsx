@@ -89,8 +89,10 @@ export function NavProjects({
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
 
-            {/* Rename Dialog */}
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
         <DialogContent className="[&>button]:hidden">
           <DialogHeader>
@@ -135,9 +137,7 @@ export function NavProjects({
         </DialogContent>
       </Dialog>
 
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
+
     </SidebarGroup>
   )
 }

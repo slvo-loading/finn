@@ -1,38 +1,28 @@
 import { ChatInput } from "./chat-input";
 import { RenderResponse } from "./render-response";
-import React, { useRef, useEffect, useState } from "react";
-
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { useModelSelector } from "@/hooks/useModelSelector"
+import { ExtendUIMessage, Chat } from "@/lib/types";
 
 export function ChatArea({
     chats,
     activeChatId,
     activeChatMessages,
     handleNewMessage,
-    model,
-    isThinking,
-    handleThinking,
     waterLevel,
     updateWaterLevel,
     handleNewChat,
     saveMessageToSupabase,
-    firstMessage,
-    clearFirstMessage,
   }: {
     chats: Chat[];
     activeChatId: string;
-    activeChatMessages: UIMessage[];
-    handleNewMessage: (message: UIMessage) => void;
-    model: string;
-    isThinking: boolean;
-    handleThinking: (thinking: boolean) => void;
+    activeChatMessages: ExtendUIMessage[];
+    handleNewMessage: (message: ExtendUIMessage, model: string) => void;
     waterLevel: number;
     updateWaterLevel: (level: number) => void;
     handleNewChat: (firstUserMessage: string) => Promise<void>;
-    saveMessageToSupabase: (chatId: string, message: UIMessage, model: string ) => Promise<void>;
-    firstMessage: string | null;
-    clearFirstMessage: () => void;
+    saveMessageToSupabase: (chatId: string, message: ExtendUIMessage[], model: string ) => Promise<void>;
   }) {
-
 
     //scroll feature
     const chatContainer = useRef<HTMLDivElement>(null);
@@ -65,10 +55,17 @@ export function ChatArea({
         setWelcomeNum(Math.floor(Math.random() * welcomeMessages.length));
     }, [welcomeMessages]);
 
+    const [isThinking, setIsThinking] = useState(false);
+
+    const handleThinking = useCallback((thinking: boolean) => {
+        setIsThinking(thinking);
+      }, []);
+
+    const model = useModelSelector((state) => state.model);
   
     return ( 
         <div className="flex-1 flex flex-col min-w-0 items-center min-h-0 items-center justify-center flex-1 w-full max-w-2xl gap-5">
-        {activeChatMessages.length > 0 ? (
+        {activeChatMessages?.length > 0 ? (
                 <div
                 ref={chatContainer}
                 className="flex-1 w-full max-w-2xl overflow-y-auto px-4 py-6 min-h-0 hide-scrollbar"
@@ -79,18 +76,16 @@ export function ChatArea({
                 <span className="text-2xl">{welcomeMessages[welcomeNum]}</span>
         )}
             <ChatInput
+            model={model}
             chats={chats}
             handleNewChat={handleNewChat}
             saveMessageToSupabase={saveMessageToSupabase}
             handleNewMessage={handleNewMessage}
-            model={model}
             handleThinking={handleThinking}
             waterLevel={waterLevel}
             updateWaterLevel={updateWaterLevel}
             activeChatId={activeChatId}
             activeChatMessages={activeChatMessages}
-            firstMessage={firstMessage}
-            clearFirstMessage={clearFirstMessage}
             />
         </div>
     );
