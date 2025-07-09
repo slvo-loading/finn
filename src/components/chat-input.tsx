@@ -51,14 +51,7 @@ export function ChatInput({
   const { messages, input, handleInputChange, handleSubmit, status, stop } = useChat({
     api: `/api/chat?model=${encodeURIComponent(model)}`,
     key: activeChatId || "new-chat",
-    initialMessages: activeChatMessages,
     onFinish: async(finalMessage, { usage }) => {
-      const chatExists = chats.some(chat => chat.id === activeChatId);
-      if(!chatExists) {
-        await handleNewChat(finalMessage.content)
-      }
-
-      setSave(true)
 
       //water level management
       const tokensUsed = usage.totalTokens || 0;
@@ -79,12 +72,12 @@ export function ChatInput({
 
 
   useEffect(() => {
-    if (save && messages.length >= 2) {
+    if (status === "ready" && messages.length >= 2 && save) {
       console.log("sending messages to be saved:", messages.slice(-2));
       saveMessageToSupabase(activeChatId, messages.slice(-2), model);
       setSave(false);
     }
-  }, [messages, save, activeChatId, saveMessageToSupabase]);
+  }, [messages, status, activeChatId, saveMessageToSupabase]);
 
   useEffect(() => {
     if (status === 'submitted') {
@@ -94,9 +87,26 @@ export function ChatInput({
     }
   }, [status, handleThinking]);
 
+  const wrappedHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (input.trim() === '') {
+      return;
+    }
+    if (!activeChatId || activeChatId === 'new-chat') {
+      handleNewChat(input.trim());
+    }
+    setSave(true);
+    handleSubmit(e);
+  }
+
+  useEffect(() => {
+    console.log("ChatInput status changed:", status);
+  }, [status]);
+
+
 
   return (
-      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={handleSubmit}>
+      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={wrappedHandleSubmit}>
         <Textarea name="prompt" placeholder="Ask anything" onChange={handleInputChange} value={input} disabled={status !== 'ready'}/>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

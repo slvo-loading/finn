@@ -41,7 +41,7 @@ import {
 
 export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string>(uuidv4());
+  const [activeChatId, setActiveChatId] = useState<string>('new-chat');
   const [activeChatMessages, setActiveChatMessages] = useState<ExtendUIMessage[]>([]);
 
   const [waterLevel, setWaterLevel] = useState(0.10); // % or liters
@@ -129,7 +129,7 @@ export default function Home() {
   // new chat functions
   const openNewChat = () => {
     console.log("Opening new chat");
-    setActiveChatId(uuidv4());
+    setActiveChatId('new-chat');
     setActiveChatMessages([]);
   };
 
