@@ -1,5 +1,7 @@
 "use client"
 
+import { useAuth } from '@/app/context/auth-provider'
+
 import {
   BadgeCheck,
   Bell,
@@ -9,8 +11,6 @@ import {
   Sparkles,
   CircleUserRound
 } from "lucide-react"
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,16 +29,9 @@ import {
 
 import { SignOutButton } from '@/components/auth/sign-out'
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar()
+  const { user } = useAuth()
 
   return (
     <SidebarMenu>
@@ -54,8 +47,13 @@ export function NavUser({
                 </div>
 
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+              {user ? (
+                <>
+                  <span className="truncate text-xs">{user.email}</span>
+                </>
+              ) : (
+                <span className="truncate font-semibold">Guest User</span>
+              )}
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -70,8 +68,13 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                {user ? (
+                <>
                   <span className="truncate text-xs">{user.email}</span>
+                </>
+              ) : (
+                <span className="truncate font-semibold">Guest User</span>
+              )}
                 </div>
               </div>
             </DropdownMenuLabel>

@@ -2,8 +2,8 @@ import type { UIMessage } from "ai";
 
 export type { UIMessage } from "ai";
 
-export type ExtendUIMessage = UIMessage && {
-    model: string
+export type ExtendUIMessage = UIMessage & {
+    model: string;
 }
 
 export type Chat = {

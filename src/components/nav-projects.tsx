@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Chat } from "@/lib/types"
+import { useChats } from "@/app/context/chat-provider"
+import Link from 'next/link';
 
 import {
   MoreHorizontal,
@@ -37,15 +39,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
-export function NavProjects({
-  chats, deleteChat, renameChat, handleSelectedChat
-}: {
-  chats: Chat[],
-  deleteChat: (chatId: string) => void,
-  renameChat: (chatId: string, newTitle: string) => void,
-  handleSelectedChat: (chatId: string) => void
-}) {
-
+export function NavProjects() {
+  const { chats, deleteChat, renameChat } = useChats()
   const { isMobile } = useSidebar()
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -57,10 +52,14 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Today</SidebarGroupLabel>
       <SidebarMenu>
-        {chats.map((item) => (
+        {chats.map((item: Chat) => (
           <SidebarMenuItem key={item.id}>
-            <SidebarMenuButton onClick={() => handleSelectedChat(item.id)}>
-              <span>{item.title}</span>
+            <SidebarMenuButton asChild>
+              <Link 
+              href={`/h/${item.id}?new=false`}
+              replace={true}>
+                <span>{item.title}</span>
+              </Link>
             </SidebarMenuButton>
 
             <DropdownMenu>

@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SidebarProvider } from "@/components/ui/sidebar"
-import {AuthProvider} from "@/components/auth/auth-provider"
+import { AuthProvider } from "@/app/context/auth-provider"
+import { ChatProvider } from "@/app/context/chat-provider"
 import { Toaster } from 'sonner';
+import { WaterTank } from "@/components/water-tank";
 import "./globals.css";
 
-import { cookies } from "next/headers"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,19 +33,24 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const cookieStore = await cookies()
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
-
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <main>
-              {children}
-              <Toaster position="top-center"/>
-            </main>
-          </SidebarProvider>
+          <ChatProvider>
+            {/* <ResizablePanelGroup direction="horizontal" autoSaveId="resizable-panel-group">
+              <ResizablePanel className="flex flex-col"> */}
+                <main>
+                  {children}
+                  <Toaster position="top-center"/>
+                </main>
+              {/* </ResizablePanel>
+            <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={25}>
+                <WaterTank waterLevel={0.1} fullTank={0.1}/>
+              </ResizablePanel>
+            </ResizablePanelGroup> */}
+          </ChatProvider>
         </AuthProvider>
       </body>
     </html>

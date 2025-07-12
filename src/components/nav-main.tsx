@@ -2,6 +2,8 @@
 
 import { MessageCirclePlus, Search, Star} from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { v4 as uuidv4 } from 'uuid'
+import Link from 'next/link'
 
 import {
   SidebarGroup,
@@ -10,21 +12,17 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-type NavMainProps = {
-    openNewChat: () => void; // Function to create a new chat
-  };
-
-export function NavMain({ openNewChat }: NavMainProps) {
+export function NavMain() {
   return (
     <SidebarGroup>
             <SidebarMenu>
                 <SidebarMenuItem >
                 
                 <SidebarMenuButton asChild>
-                  <Button variant="ghost" size="sm" className="w-full justify-start" onClick={openNewChat}>
+                  <Link href={`/h/${"new-chat"}`}>
                     <MessageCirclePlus/>
                     <span>New Chat</span>
-                  </Button>
+                  </Link>
                 </SidebarMenuButton>
 
                   <SidebarMenuButton asChild>

@@ -1,31 +1,24 @@
-import { ChatInput } from "./chat-input";
-import { RenderResponse } from "./render-response";
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { useModelSelector } from "@/hooks/useModelSelector"
-import { ExtendUIMessage, Chat } from "@/lib/types";
+'use client';
+
+import { useChats } from "@/app/context/chat-provider";
+import { useModelSelector } from "@/hooks/useModelSelector";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { RenderResponse } from "@/components/render-response";
+import { ChatInput } from "@/components/chat-input";
 
 export function ChatArea({
-    chats,
-    activeChatId,
-    activeChatMessages,
-    handleNewMessage,
     waterLevel,
     updateWaterLevel,
-    handleNewChat,
-    saveMessageToSupabase,
   }: {
-    chats: Chat[];
-    activeChatId: string;
-    activeChatMessages: ExtendUIMessage[];
-    handleNewMessage: (message: ExtendUIMessage, model: string) => void;
     waterLevel: number;
     updateWaterLevel: (level: number) => void;
-    handleNewChat: (firstUserMessage: string) => Promise<void>;
-    saveMessageToSupabase: (chatId: string, message: ExtendUIMessage[], model: string ) => Promise<void>;
   }) {
+    const [welcomeNum, setWelcomeNum] = useState<number>(0);
+    const [isThinking, setIsThinking] = useState(false);
+    const chatContainer = useRef<HTMLDivElement>(null);
+    const { activeChatMessages } = useChats();
 
     //scroll feature
-    const chatContainer = useRef<HTMLDivElement>(null);
     const scroll = () => {
     if (!chatContainer.current) return;
     const {offsetHeight, scrollHeight, scrollTop } = chatContainer.current as HTMLDivElement;
@@ -49,20 +42,17 @@ export function ChatArea({
         "Where should we begin?"
     ]
 
-    const [welcomeNum, setWelcomeNum] = useState<number>(0);
-
     useEffect(() => {
         setWelcomeNum(Math.floor(Math.random() * welcomeMessages.length));
-    }, [welcomeMessages]);
-
-    const [isThinking, setIsThinking] = useState(false);
+    }, []);
 
     const handleThinking = useCallback((thinking: boolean) => {
         setIsThinking(thinking);
       }, []);
 
-    const model = useModelSelector((state) => state.model);
-  
+    const model = "deepseek:deepseek-chat"
+    
+
     return ( 
         <div className="flex-1 flex flex-col min-w-0 items-center min-h-0 items-center justify-center flex-1 w-full max-w-2xl gap-5">
         {activeChatMessages?.length > 0 ? (
@@ -75,19 +65,14 @@ export function ChatArea({
             ) : (
                 <span className="text-2xl">{welcomeMessages[welcomeNum]}</span>
         )}
+        <div>
             <ChatInput
             model={model}
-            chats={chats}
-            handleNewChat={handleNewChat}
-            saveMessageToSupabase={saveMessageToSupabase}
-            handleNewMessage={handleNewMessage}
             handleThinking={handleThinking}
             waterLevel={waterLevel}
             updateWaterLevel={updateWaterLevel}
-            activeChatId={activeChatId}
-            activeChatMessages={activeChatMessages}
             />
+            </div>
         </div>
     );
 }
-  
