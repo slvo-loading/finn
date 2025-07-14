@@ -10,14 +10,14 @@ import { useModelSelector } from "@/hooks/useModelSelector";
 
 export default function Chats() {
     //for chats
-    const { handleSelectedChat, activeChatMessages } = useChats();
-    const params = useParams();
-    const chatId = params.id as string;
+    const { handleSelectedChat, activeChatMessages, activeChatId, chats } = useChats();
+    const { id: chatId } = useParams();
     const searchParams = useSearchParams();
-    const isNewChat = searchParams.get("new") === "true";
+    const firstMessageContent = searchParams.get("message");
     const [isThinking, setIsThinking] = useState(false);
     const chatContainer = useRef<HTMLDivElement>(null);
     const model = useModelSelector(state => state.model);
+    const initialLoadComplete = useRef(false);
 
     //for tank
     const fullTank = 0.10;
@@ -28,12 +28,27 @@ export default function Chats() {
       setWaterLevel(level);
     };
 
-    // check if the chat exists create a new chat, else load the messages from the existing chat
+    // Initial load check
     useEffect(() => {
-      if(!isNewChat) {
-        handleSelectedChat(chatId);
+      if (typeof chatId !== 'string' || chatId === 'new-chat') {
+        return;
       }
-    }, []);
+      
+      if (firstMessageContent || activeChatId === chatId) {
+        initialLoadComplete.current = true;
+        return;
+      }
+      
+      // Check if chat exists in loaded chats
+      const chatExists = chats.some(chat => chat.id === chatId);
+      
+
+      if (!initialLoadComplete.current && chatExists) {
+        console.log(`Loading chat ${chatId}`);
+        handleSelectedChat(chatId);
+        initialLoadComplete.current = true;
+      }
+    }, [chatId, activeChatId, firstMessageContent, handleSelectedChat, chats]);
 
 
     //scroll feature
@@ -64,7 +79,7 @@ export default function Chats() {
           </div>
           <div>
             <ChatInput
-            isNewChat={isNewChat}
+            firstMessageContent={firstMessageContent}
             handleThinking={handleThinking}
             model={model}
             waterLevel={waterLevel}

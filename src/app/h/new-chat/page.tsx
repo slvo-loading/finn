@@ -7,9 +7,8 @@ import { ArrowUp } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react"; 
 import { v4 as uuidv4 } from 'uuid'; 
-import { UIMessage } from "@/types/messages"; 
-import { useRouter } from "next/navigation"; 
-import { Message } from "ai";
+import { UIMessage } from "@/lib/types"; 
+import { useRouter } from "next/navigation";
 
 import {
   AlertDialog,
@@ -23,13 +22,11 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function NewChat() {
-  const { openNewChat, handleNewMessage, handleNewChat, activeChatMessages } = useChats();
-  const model = useModelSelector(state => state.model);
+  const { openNewChat, handleNewChat, activeChatMessages, activeChatId } = useChats();
   const router = useRouter();
 
   const [input, setInput] = useState("");
   const [shouldRoute, setShouldRoute] = useState(false);
-  const [chatId, setChatId] = useState<string>("");
   const [waterLevel, setWaterLevel] = useState(0.10);
   const [welcomeNum, setWelcomeNum] = useState<number>(0);
 
@@ -50,27 +47,25 @@ export default function NewChat() {
   },[]);
 
   useEffect(() => {
-    if (shouldRoute && activeChatMessages.length > 0) {
-      router.push(`/h/${chatId}?new=true`);
+    if (shouldRoute && activeChatId !== "new-chat") {
+      router.push(`/h/${activeChatId}?message=${encodeURIComponent(input)}`);
     }
-  }, [shouldRoute, activeChatMessages, chatId, router]);
+  }, [shouldRoute, activeChatMessages, activeChatId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const message: UIMessage = {
-      id: uuidv4(),
-      role: 'user',
-      content: input,
-      parts: [{ type: 'text', text: input }],
-      created_at: new Date(),
-    };
+    // const message: UIMessage = {
+    //   id: uuidv4(),
+    //   role: 'user',
+    //   content: input,
+    //   parts: [{ type: 'text', text: input }],
+    //   createdAt: new Date(),
+    // };
 
     const newId = uuidv4();
-    setChatId(newId);
-
-    handleNewMessage(message, model);
+    // handleNewMessage(message, model);
     handleNewChat(newId, input);
     setShouldRoute(true);
   };

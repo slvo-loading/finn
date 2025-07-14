@@ -9,6 +9,9 @@ import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 
 type ChatContextType = {
+    activeChatId: string;
+    save: boolean;
+    handleChatId: (chatId: string) => void;
     chats: Chat[];
     activeChatMessages: UIMessage[];
     openNewChat: () => void;
@@ -23,10 +26,17 @@ type ChatContextType = {
 const ChatContext = createContext<ChatContextType | null>(null);
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
+    const [activeChatId, setActiveChatId] = useState<string>("new-chat");
     const [chats, setChats] = useState<Chat[]>([]);
     const [activeChatMessages, setActiveChatMessages] = useState<ExtendUIMessage[]>([]);
+    const [save, setSave] = useState<boolean>(false);
+
     const { session } = useAuth();
     const router = useRouter();
+
+    const handleChatId = (chatId: string) => {
+        setActiveChatId(chatId);
+    };
 
     // fetches chats when sess
     const fetchChats = useCallback(async () => {
@@ -58,7 +68,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     // resets state for new chat
     const openNewChat = () => {
+        setActiveChatId("new-chat");
         setActiveChatMessages([]);
+        setSave(false);
     };
 
 
@@ -68,6 +80,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.error("User not authenticated");
             return;
         }
+
+        setActiveChatId(chatId);
+        console.log("Set active chat id in handleNewChat:", chatId)
 
         const title = await generateChatTitle(message);
         const newChat = {
@@ -86,9 +101,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.error("Error creating new chat:", error);
         } else {
             console.log("New chat created successfully");
+            setSave(true);
+            fetchChats();
         }
-
-        fetchChats();
     };
 
 
@@ -99,6 +114,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             return;
         }
 
+        setActiveChatId(chatId);
+        console.log("Set active chat id in handleSelectedChat:", chatId)
+
         const { data, error } = await supabase
         .from("messages")
         .select("*")
@@ -108,19 +126,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         if (error) {
             console.error("Error fetching messages:", error);
             setActiveChatMessages([]);
-        } else {
-            console.log("Successfully fetched messages.");
-
-            const loadedMessages: ExtendUIMessage[] = data.map(msg => ({
-                id: msg.id,
-                role: msg.role,
-                content: msg.content,
-                model: msg.model,
-                parts: msg.parts || [],
-                createdAt: new Date(msg.created_at),
-            }));
-            setActiveChatMessages(loadedMessages);
         }
+        
+        // console.log("Successfully fetched messages.");
+
+        const loadedMessages: ExtendUIMessage[] = data.map(msg => ({
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+            model: msg.model,
+            parts: msg.parts || [],
+            createdAt: new Date(msg.created_at),
+        }));
+        setActiveChatMessages(loadedMessages);
     };
 
 
@@ -149,10 +167,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.error("User not authenticated");
             return;
         }
-        if (activeChatMessages.length < 2) {
-            console.warn("Not enough messages to save.");
-            return;
-        }
+        // if (activeChatMessages.length < 2) {
+        //     console.warn("Not enough messages to save.");
+        //     return;
+        // }
 
         const messages = activeChatMessages.slice(-2);
 
@@ -193,8 +211,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         }
         
         if (currentId === chatId) {
-        router.push('/h/new-chat');
-        setActiveChatMessages([]);
+            openNewChat();
+            router.push('/h/new-chat');
         }
 
         setChats((prev) => prev.filter((chat) => chat.id !== chatId));
@@ -212,27 +230,34 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.error("Error renaming chat:", error);
         } else {
             console.log("Chat renamed successfully");
-        }
 
-        setChats((prev) =>
-        prev.map((chat) =>
-            chat.id === chatId ? { ...chat, title: newTitle } : chat
-        ));
+            setChats((prev) =>
+                prev.map((chat) =>
+                    chat.id === chatId ? { ...chat, title: newTitle } : chat
+                ));
+        }
     };
 
 
     // for debugging
-    useEffect(() => {
-        console.log("Fetched chats:", chats);
-    }, [chats]);
+    // useEffect(() => {
+    //     console.log("Fetched chats:", chats);
+    // }, [chats]);
 
     useEffect(() => {
-        console.log("Active chat messages:", activeChatMessages);
-    }, [activeChatMessages.length]);
+        console.log("Active chat ID:", activeChatId);
+    }, [activeChatId])
+
+    useEffect(() => {
+        console.log("Save state:", save);
+    },[save])
 
     return (
         <ChatContext.Provider
           value={{
+            activeChatId,
+            save,
+            handleChatId,
             chats,
             activeChatMessages,
             openNewChat,

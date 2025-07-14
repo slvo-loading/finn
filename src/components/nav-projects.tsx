@@ -56,7 +56,7 @@ export function NavProjects() {
           <SidebarMenuItem key={item.id}>
             <SidebarMenuButton asChild>
               <Link 
-              href={`/h/${item.id}?new=false`}
+              href={`/h/${item.id}`}
               replace={true}>
                 <span>{item.title}</span>
               </Link>

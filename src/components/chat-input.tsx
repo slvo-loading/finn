@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { MODEL_COST_PER_TOKEN_USD } from "@/lib/model-cost"
 import { useChat } from '@ai-sdk/react'
 import { ArrowUp, CircleStop } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Message } from "ai"
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   AlertDialog,
@@ -23,56 +24,54 @@ import {
 
 
 export function ChatInput({
-  chatId,
-  isNewChat,
+  firstMessageContent,
   model,
   handleThinking, 
   waterLevel, 
+  updateWaterLevel,
 }: {
-  chatId: string;
-  isNewChat: boolean;
+  firstMessageContent: string | null;
   model: string;
   handleThinking: (thinking: boolean) => void;
   waterLevel: number; 
+  updateWaterLevel: (level: number) => void;
 }) {
 
-  const [save, setSave] = useState(false);
-  const { handleNewMessage, handleSaveMessages, activeChatMessages } = useChats();
+  const { handleNewMessage, handleSaveMessages, activeChatId, save } = useChats();
   const { session } = useAuth();
-  const [hasAppended, setHasAppended] = useState(false);
+  const hasAppended = useRef(false);
 
   const { messages, input, handleInputChange, handleSubmit, status, stop, append } = useChat({
     api: `/api/chat?model=${encodeURIComponent(model)}`,
-    key: chatId,
+    key: activeChatId,
     onFinish: async(finalMessage, { usage }) => {
 
       //water level management
       const tokensUsed = usage.totalTokens || 0;
       const costPerToken = MODEL_COST_PER_TOKEN_USD[model]; 
       const costUSD = tokensUsed * costPerToken;
-      // updateWaterLevel(Math.max(waterLevel - costUSD, 0));
+      updateWaterLevel(Math.max(waterLevel - costUSD, 0));
     },
 });
 
   useEffect(() => {
-    if(isNewChat && messages.length === 0 && activeChatMessages.length > 0) {
-      const firstMessage = activeChatMessages[0];
-      if (!firstMessage) return;
+    if (firstMessageContent && !hasAppended.current) {
       const convertedMessage: Message = {
-        id: firstMessage.id,
-        role: firstMessage.role,
-        content: firstMessage.content,
-        createdAt: firstMessage.createdAt,
+        id: uuidv4(),
+        role: 'user',
+        content: firstMessageContent,
+        createdAt: new Date(),
       };
       append(convertedMessage)
-      setHasAppended(true);
+      hasAppended.current = true;
     }
-  }, [])
+  }, [firstMessageContent])
+
 
   //update parent with new messages for the UI only
   useEffect(() => {
     const latestMessage = messages.at(-1);
-    if (messages.length > 1 && latestMessage && hasAppended) {
+    if (messages.length > 0 && latestMessage) { 
       handleNewMessage(latestMessage, model);
     }
   }, [messages]);
@@ -80,16 +79,15 @@ export function ChatInput({
 
   //save messages to the database 
   useEffect(() => {
-    if ( !chatId || !session ) {
+    if (!session ) {
       return;
     }
-
+    console.log("can save?:", status === "ready" && messages.length >= 2);
+    console.log("activeChatId for save:", activeChatId);
     if (status === "ready" && messages.length >= 2 && save) {
-      console.log("sending messages to be saved:", messages.slice(-2));
-      handleSaveMessages( chatId);
-      setSave(false);
+      handleSaveMessages(activeChatId);
     }
-  }, [messages, status, chatId, handleSaveMessages]);
+  }, [status, save]);
 
 
   //handle thinking state for UI
@@ -103,13 +101,8 @@ export function ChatInput({
 
 
   useEffect(() => {
-    console.log("ChatInput status changed:", status);
+    console.log("status changed:", status);
   }, [status]);
-
-  useEffect(() => {
-    console.log("ai sdk's messages:", messages);
-  }, [messages.length]);
-
 
   return (
       <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={handleSubmit}>
