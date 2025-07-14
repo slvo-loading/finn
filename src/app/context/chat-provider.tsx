@@ -6,7 +6,7 @@ import { UIMessage, ExtendUIMessage, Chat } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
 import { generateChatTitle } from "@/app/actions/generate-title";
 import { useRouter } from 'next/navigation';
-import { v4 as uuidv4 } from 'uuid';
+import { saveEmbeddings } from '@/app/actions/save-embeddings';
 
 type ChatContextType = {
     activeChatId: string;
@@ -167,10 +167,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.error("User not authenticated");
             return;
         }
-        // if (activeChatMessages.length < 2) {
-        //     console.warn("Not enough messages to save.");
-        //     return;
-        // }
+        if (activeChatMessages.length < 2) {
+            console.warn("Not enough messages to save.");
+            return;
+        }
 
         const messages = activeChatMessages.slice(-2);
 
@@ -185,14 +185,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             created_at: message.createdAt
         }));
           
-        const { data, error } = await supabase
+        const { data: savedMessages, error } = await supabase
             .from("messages")
-            .insert(messageRecords);
+            .insert(messageRecords)
+            .select();
     
         if (error) {
         console.error("Error saving message:", error);
         } else {
-        console.log("Message saved successfully:", data);
+            console.log("Message saved successfully:", savedMessages);
+            await Promise.all(
+                savedMessages.map(msg =>
+                saveEmbeddings(msg.id, msg.content)
+                )
+            );
         }
     };
 
