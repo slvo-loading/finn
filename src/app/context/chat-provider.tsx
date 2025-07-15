@@ -18,7 +18,7 @@ type ChatContextType = {
     handleSelectedChat: (chatId: string) => Promise<void>;
     handleNewMessage: (message: UIMessage, messageModel: string) => void;
     handleSaveMessages: (chatId: string) => Promise<void>;
-    deleteChat: (chatId: string, currentId: string) => Promise<void>;
+    deleteChat: (chatId: string) => Promise<void>;
     renameChat: (chatId: string, newTitle: string) => Promise<void>;
 };
 
@@ -225,7 +225,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     };
 
     // deletes a chat and clears UI
-    const deleteChat = async (chatId: string, currentId: string) => {
+    const deleteChat = async (chatId: string) => {
         const { error } = await supabase
             .from("chats")
             .delete()
@@ -237,7 +237,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.log("Chat deleted successfully");
         }
         
-        if (currentId === chatId) {
+        if (activeChatId === chatId) {
             openNewChat();
             router.push('/h/new-chat');
         }
