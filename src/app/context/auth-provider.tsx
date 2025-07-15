@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib//supabase";
 import { Session, User } from '@supabase/supabase-js';
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 // Define the shape of your context
 type AuthContextType = {

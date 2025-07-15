@@ -1,12 +1,12 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useAuth } from './auth-provider';
-import { UIMessage, ExtendUIMessage, Chat } from '@/lib/types';
+import { generateChatTitle } from "@/lib/actions/generate-title";
+import { saveEmbeddings } from '@/lib/actions/save-embeddings';
 import { supabase } from '@/lib/supabase';
-import { generateChatTitle } from "@/app/actions/generate-title";
+import { Chat, ExtendUIMessage, UIMessage } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { saveEmbeddings } from '@/app/actions/save-embeddings';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useAuth } from './auth-provider';
 
 type ChatContextType = {
     activeChatId: string;

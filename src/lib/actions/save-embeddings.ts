@@ -1,7 +1,7 @@
 'use server';
-import { embedMany } from 'ai';
-import { openai } from '@ai-sdk/openai';
 import { supabase } from '@/lib/supabase';
+import { openai } from '@ai-sdk/openai';
+import { embedMany } from 'ai';
 
 const embedding_model = openai.embedding('text-embedding-ada-002');
 const MAX_CHARS = 1000;

@@ -37,13 +37,17 @@ export function ChatInput({
   updateWaterLevel: (level: number) => void;
 }) {
 
-  const { handleNewMessage, handleSaveMessages, activeChatId, save } = useChats();
+  const { handleNewMessage, handleSaveMessages, activeChatId, save, activeChatMessages } = useChats();
   const { session } = useAuth();
   const hasAppended = useRef(false);
 
   const { messages, input, handleInputChange, handleSubmit, status, stop, append } = useChat({
     api: `/api/chat?model=${encodeURIComponent(model)}`,
+    headers: {
+      'Authorization': `Bearer ${session?.access_token || ''}`,
+    },
     key: activeChatId,
+    initialMessages: activeChatMessages.slice(-8),
     onFinish: async(finalMessage, { usage }) => {
 
       //water level management

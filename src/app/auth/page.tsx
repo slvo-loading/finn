@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { LoaderCircle } from "lucide-react"
+import { LoaderCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from 'sonner';
 
