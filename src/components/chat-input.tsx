@@ -99,7 +99,7 @@ useEffect(() => {
     if (!session ) {
       return;
     }
-    console.log("can save?:", status === "ready" && messages.length >= 2);
+    console.log("can save?:", status === "ready" && messages.length >= 2 && save);
     console.log("activeChatId for save:", activeChatId);
     if (status === "ready" && messages.length >= 2 && save) {
       handleSaveMessages(activeChatId);

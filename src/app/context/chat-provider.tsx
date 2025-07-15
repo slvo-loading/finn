@@ -144,6 +144,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             createdAt: new Date(msg.created_at),
         }));
         setActiveChatMessages(loadedMessages);
+        setSave(true);
     }, [session?.user.id]);
 
 
@@ -176,6 +177,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.warn("Not enough messages to save.");
             return;
         }
+        console.log("saving messages");
 
         const messages = activeChatMessages.slice(-2);
 
@@ -189,19 +191,38 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             model: message.model,
             created_at: message.createdAt
         }));
+
+        const updateTimpestamp = new Date();
           
-        const { data: savedMessages, error } = await supabase
-            .from("messages")
-            .insert(messageRecords)
-            .select();
-    
-        if (error) {
-        console.error("Error saving message:", error);
-        } else {
-            console.log("Message saved successfully:", savedMessages);
+        const [messagesResponse, chatsResponse] = await Promise.all([
+            supabase.from("messages")
+            .insert(messageRecords),
+            supabase.from("chats")
+            .update({ updated_at: updateTimpestamp })
+            .eq('id', chatId),
+        ]);
+
+        // if (messagesResponse.error) {
+        //     console.error("Error saving messages:", messagesResponse.error);
+        //     return;
+        // }
+        
+        if (chatsResponse.error) {
+            console.error("Error updating chat timestamp:", chatsResponse.error);
+            return;
         }
+
+        updateChatTimestamp(chatId, updateTimpestamp.toISOString())
+        console.log("Messages saved successfully.");
     };
 
+    const updateChatTimestamp = async (chatId: string, updateTimestamp: string) => {
+        setChats(prevChats =>
+            prevChats.map(chat =>
+              chat.id === chatId ? { ...chat, updated_at: updateTimestamp } : chat
+            )
+        );
+    };
 
     // deletes a chat and clears UI
     const deleteChat = async (chatId: string, currentId: string) => {
