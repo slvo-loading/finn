@@ -58,18 +58,31 @@ export function ChatInput({
     },
 });
 
-  useEffect(() => {
-    if (firstMessageContent && !hasAppended.current) {
+useEffect(() => {
+  if (firstMessageContent && !hasAppended.current) {
+    // Check if we've already processed this message; could move this to db
+    const processedKey = `processed-message-${activeChatId}`;
+    
+    if (!localStorage.getItem(processedKey)) {
       const convertedMessage: Message = {
         id: uuidv4(),
         role: 'user',
         content: firstMessageContent,
         createdAt: new Date(),
       };
-      append(convertedMessage)
+      
+      append(convertedMessage);
+      hasAppended.current = true;
+      
+      // Mark as processed
+      localStorage.setItem(processedKey, 'true');
+    } else {
+      // We've already processed this message; could move this to db
+      console.log("Skipping already processed message:", firstMessageContent.substring(0, 20));
       hasAppended.current = true;
     }
-  }, [firstMessageContent])
+  }
+}, [firstMessageContent, activeChatId]);
 
 
   //update parent with new messages for the UI only
@@ -108,23 +121,28 @@ export function ChatInput({
     console.log("status changed:", status);
   }, [status]);
 
+  const wrappedHandleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit(e);
+  }
+
   return (
-      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={handleSubmit}>
+      <form className='bg-gray-100 w-2xl p-4 mb-5 flex flex-col rounded-xl' onSubmit={wrappedHandleSubmit}>
         <Textarea name="prompt" placeholder="Ask anything" onChange={handleInputChange} value={input} disabled={status !== 'ready'}/>
         <div className="flex items-center justify-between">
           
-          {waterLevel > 0 ? (
-            status === "submitted" || status === "streaming" ? (
+          {/* {waterLevel > 0 ? ( */}
+            {/* status === "submitted" || status === "streaming" ? (
               <Button type="button" onClick={() => stop()}>
               <CircleStop />
               </Button>
-            ) : (
+            ) : ( */}
               <Button type="submit">
                 <ArrowUp />
               </Button>
-            )
-          ) : (
-            <AlertDialog>
+            {/* )
+          ) : ( */}
+            {/* <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button type="button">
                   <ArrowUp />
@@ -142,7 +160,7 @@ export function ChatInput({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          )}
+          )} */}
         </div>
       </form>
   );

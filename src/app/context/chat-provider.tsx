@@ -1,7 +1,6 @@
 'use client';
 
 import { generateChatTitle } from "@/lib/actions/generate-title";
-import { saveEmbeddings } from '@/lib/actions/save-embeddings';
 import { supabase } from '@/lib/supabase';
 import { Chat, ExtendUIMessage, UIMessage } from '@/lib/types';
 import { useRouter } from 'next/navigation';
@@ -108,7 +107,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
 
     // fetch messages for the selected chat
-    const handleSelectedChat = async (chatId: string) => {
+    const handleSelectedChat = useCallback(async (chatId: string) => {
         if (!session?.user.id) {
             console.log("User not authenticated");
             return;
@@ -127,6 +126,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             console.error("Error fetching messages:", error);
             setActiveChatMessages([]);
         }
+
+        if (!data || data.length === 0) {
+            console.log("No messages found for this chat.");
+            setActiveChatMessages([]);
+            return;
+        }
         
         // console.log("Successfully fetched messages.");
 
@@ -139,7 +144,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             createdAt: new Date(msg.created_at),
         }));
         setActiveChatMessages(loadedMessages);
-    };
+    }, [session?.user.id]);
 
 
     //updates the last message to stream to the UI, also saves the model
@@ -194,11 +199,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         console.error("Error saving message:", error);
         } else {
             console.log("Message saved successfully:", savedMessages);
-            await Promise.all(
-                savedMessages.map(msg =>
-                saveEmbeddings(msg.id, msg.content)
-                )
-            );
         }
     };
 

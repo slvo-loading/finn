@@ -35,19 +35,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
+    const systemPrompt = `
+        You are a friendly, intelligent AI assistant who remembers important things about the user and helps them across multiple conversations.
+        When the user shares something meaningful — like a preference, goal, decision, or fact — use the "addUserMemory" tool to remember it.
+        Only call tools when it's genuinely helpful to do so. If you're unsure, just continue the conversation normally.
+        Always respond to the user — never ignore a message, even if it’s unclear or outside your scope. Acknowledge it, ask clarifying questions, or redirect politely if needed.
+
+        If you're asked a question that needs past context, try to recall any relevant memories using your long-term memory.`
+
     const result = await streamText({
       model: mem0(model,{user_id: user.id}),
-      system: `
-        You are a friendly, intelligent AI assistant who remembers important things about the user and helps them across multiple conversations. 
-        When the user shares something meaningful — like a preference, goal, decision, or fact — use the "addUserMemory" tool to remember it. 
-        Only call tools when it's genuinely helpful to do so. If you're unsure, just continue the conversation normally.
-
-        If you're asked a question that needs past context, try to recall any relevant memories using your long-term memory.`,
+      system: systemPrompt,
       messages,
       maxTokens: 100,
       temperature: 0.7,
       tools: {
-        add: tool({
+        addUserMemory: tool({
           description: 'Store important facts, preferences, goals, or memories about the user that may be useful in future conversations.',
           parameters: z.object({
             content: z.string().describe('A detailed piece of information or context to remember about the user.'),

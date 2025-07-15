@@ -17,7 +17,6 @@ export default function Chats() {
     const [isThinking, setIsThinking] = useState(false);
     const chatContainer = useRef<HTMLDivElement>(null);
     const model = useModelSelector(state => state.model);
-    const initialLoadComplete = useRef(false);
 
     //for tank
     const fullTank = 0.10;
@@ -33,20 +32,10 @@ export default function Chats() {
       if (typeof chatId !== 'string' || chatId === 'new-chat') {
         return;
       }
-      
-      if (firstMessageContent || activeChatId === chatId) {
-        initialLoadComplete.current = true;
-        return;
-      }
-      
-      // Check if chat exists in loaded chats
       const chatExists = chats.some(chat => chat.id === chatId);
-      
 
-      if (!initialLoadComplete.current && chatExists) {
-        console.log(`Loading chat ${chatId}`);
+      if (chatExists) {
         handleSelectedChat(chatId);
-        initialLoadComplete.current = true;
       }
     }, [chatId, activeChatId, firstMessageContent, handleSelectedChat, chats]);
 
