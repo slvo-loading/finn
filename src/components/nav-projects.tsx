@@ -50,7 +50,7 @@ export function NavProjects() {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Today</SidebarGroupLabel>
+      <SidebarGroupLabel>Chats</SidebarGroupLabel>
       <SidebarMenu>
       {[...chats]
           .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
