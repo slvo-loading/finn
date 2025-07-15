@@ -9,7 +9,8 @@ import Link from 'next/link';
 import {
   MoreHorizontal,
   Trash2,
-  PenLine
+  PenLine,
+  FolderInput,
 } from "lucide-react"
 
 import {
@@ -77,6 +78,11 @@ export function NavProjects() {
                 align={isMobile ? "end" : "start"}
               >
 
+                  <DropdownMenuItem>
+                    <FolderInput className="text-muted-foreground" />
+                    <span>Save</span>
+                  </DropdownMenuItem>
+
                   <DropdownMenuItem onClick={() => {setTitle(item.title); setSelectedId(item.id); setRenameOpen(true);}}>
                     <PenLine className="text-muted-foreground" />
                     <span>Rename</span>
@@ -86,7 +92,11 @@ export function NavProjects() {
 
                   <DropdownMenuItem onClick={() => {setSelectedId(item.id); setTitle(item.title); setDeleteOpen(true)}}>
                     <Trash2 className="text-muted-foreground"/>
-                    <span>Delete Chat</span>
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem>
+                    <span className="text-xs text-gray-400">Edited: {new Date(item.updated_at).toLocaleDateString()}</span>
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
