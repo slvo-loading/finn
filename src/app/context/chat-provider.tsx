@@ -12,7 +12,7 @@ type ChatContextType = {
     save: boolean;
     handleChatId: (chatId: string) => void;
     chats: Chat[];
-    activeChatMessages: UIMessage[];
+    activeChatMessages: ExtendUIMessage[];
     openNewChat: () => void;
     handleNewChat: (chatId: string, message: string) => Promise<void>;
     handleSelectedChat: (chatId: string) => Promise<void>;
@@ -191,14 +191,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             model: message.model,
             created_at: message.createdAt
         }));
-
-        const updateTimpestamp = new Date();
           
         const [messagesResponse, chatsResponse] = await Promise.all([
             supabase.from("messages")
             .insert(messageRecords),
             supabase.from("chats")
-            .update({ updated_at: updateTimpestamp })
+            .update({ updated_at:  new Date() })
             .eq('id', chatId),
         ]);
 
@@ -212,16 +210,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        updateChatTimestamp(chatId, updateTimpestamp.toISOString())
+        fetchChats();
         console.log("Messages saved successfully.");
-    };
-
-    const updateChatTimestamp = async (chatId: string, updateTimestamp: string) => {
-        setChats(prevChats =>
-            prevChats.map(chat =>
-              chat.id === chatId ? { ...chat, updated_at: updateTimestamp } : chat
-            )
-        );
     };
 
     // deletes a chat and clears UI

@@ -5,6 +5,11 @@ import { z } from 'zod';
 import { addMemories } from '@mem0/vercel-ai-provider';
 import { supabase } from '@/lib/supabase';
 
+// model switching
+import { createProviderRegistry } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { anthropic } from '@ai-sdk/anthropic';
+import { deepseek } from '@ai-sdk/deepseek';
 
 export async function POST(req: NextRequest) {
 
@@ -17,6 +22,12 @@ export async function POST(req: NextRequest) {
     if (!model) {
       return new NextResponse('Model is required', { status: 400 });
     }
+
+    const registry = createProviderRegistry({
+      anthropic,
+      openai,
+      deepseek
+    })
 
     const body = await req.json();
     const { messages } = body;
@@ -44,26 +55,26 @@ export async function POST(req: NextRequest) {
         If you're asked a question that needs past context, try to recall any relevant memories using your long-term memory.`
 
     const result = await streamText({
-      model: mem0(model,{user_id: user.id}),
+      model: registry.languageModel(model),
       system: systemPrompt,
       messages,
       maxTokens: 100,
       temperature: 0.7,
-      tools: {
-        addUserMemory: tool({
-          description: 'Store important facts, preferences, goals, or memories about the user that may be useful in future conversations.',
-          parameters: z.object({
-            content: z.string().describe('A detailed piece of information or context to remember about the user.'),
-          }),
-          async execute({ content }) {
-            await addMemories([{
-              role: 'user',
-              content: [{ type: 'text', text: content }],},],
-              { user_id: user.id }
-            );
-            return `Saved to memory: "${content}"`;
-          },
-        })},
+      // tools: {
+      //   addUserMemory: tool({
+      //     description: 'Store important facts, preferences, goals, or memories about the user that may be useful in future conversations.',
+      //     parameters: z.object({
+      //       content: z.string().describe('A detailed piece of information or context to remember about the user.'),
+      //     }),
+      //     async execute({ content }) {
+      //       await addMemories([{
+      //         role: 'user',
+      //         content: [{ type: 'text', text: content }],},],
+      //         { user_id: user.id }
+      //       );
+      //       return `Saved to memory: "${content}"`;
+      //     },
+      //   })},
     })
 
   return result.toDataStreamResponse({

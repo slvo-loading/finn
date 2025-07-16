@@ -53,9 +53,7 @@ export function NavProjects() {
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
       <SidebarMenu>
-      {[...chats]
-          .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-          .map((item: Chat) => (
+      {chats.map((item: Chat) => (
           <SidebarMenuItem key={item.id}>
             <SidebarMenuButton asChild>
               <Link 

@@ -11,14 +11,14 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import {CopyButton} from "@/components/copy-button"
-import { UIMessage } from "@/lib/types";
+import { ExtendUIMessage } from "@/lib/types";
 
 
 export function RenderResponse({
   messages, 
   isThinking 
 }: {
-  messages: UIMessage[], 
+  messages: ExtendUIMessage[], 
   isThinking:boolean }) {
 
     return (
