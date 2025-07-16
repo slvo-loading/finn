@@ -11,6 +11,13 @@ import Image from 'next/image'
 import { redirect, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { ChatArea } from "@/components/chat-area"
+import { WaterTank } from "@/components/water-tank";
+
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 export default function Home() {
   const session = useAuth();
@@ -113,6 +120,9 @@ export default function Home() {
             </div>
         </div>
       )}
+
+<ResizablePanelGroup direction="horizontal" autoSaveId="resizable-panel-group">
+<ResizablePanel className="flex flex-col">
             <div className='flex-1 flex flex-col min-w-0 items-center min-h-0'>
               <div className="flex justify-between w-full px-2 pt-2 flex-shrink-0 gap-2">
                   <div className="flex gap-2">
@@ -132,6 +142,13 @@ export default function Home() {
               />
 
             </div>
+
+            </ResizablePanel>
+      <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={25}>
+          <WaterTank waterLevel={0.1} fullTank={0.1}/>
+        </ResizablePanel>
+      </ResizablePanelGroup>
             </div>
   )
 }

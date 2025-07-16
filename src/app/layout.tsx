@@ -3,14 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/app/context/auth-provider"
 import { ChatProvider } from "@/app/context/chat-provider"
 import { Toaster } from 'sonner';
-import { WaterTank } from "@/components/water-tank";
 import "./globals.css";
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,18 +32,10 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
           <ChatProvider>
-            {/* <ResizablePanelGroup direction="horizontal" autoSaveId="resizable-panel-group">
-              <ResizablePanel className="flex flex-col"> */}
                 <main>
                   {children}
                   <Toaster position="top-center"/>
                 </main>
-              {/* </ResizablePanel>
-            <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={25}>
-                <WaterTank waterLevel={0.1} fullTank={0.1}/>
-              </ResizablePanel>
-            </ResizablePanelGroup> */}
           </ChatProvider>
         </AuthProvider>
       </body>

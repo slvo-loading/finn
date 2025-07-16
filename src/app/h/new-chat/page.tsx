@@ -56,16 +56,7 @@ export default function NewChat() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // const message: UIMessage = {
-    //   id: uuidv4(),
-    //   role: 'user',
-    //   content: input,
-    //   parts: [{ type: 'text', text: input }],
-    //   createdAt: new Date(),
-    // };
-
     const newId = uuidv4();
-    // handleNewMessage(message, model);
     handleNewChat(newId, input);
     setShouldRoute(true);
   };
